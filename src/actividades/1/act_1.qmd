@@ -1,0 +1,148 @@
+---
+title: "Actividad 1 (27/05/2025)"
+format:
+    html:
+        code-fold: true
+---
+
+```{r}
+#| label: load-packages
+#| warning: false
+library(tidyverse)
+```
+
+## Intro
+
+Cargar el dataset y guardarlo en un objeto llamado df . Utilizar la función read_xlsx del paquete readxl
+
+## Pregunta 2
+
+Analizar la estructura del dataset: cantidad de observaciones, columnas, tipos de variables (numéricas \<discretas, continuas\>, categóricas )
+
+## Pregunta 3
+
+Convertir la variable grupo como factor.
+
+```{r}
+#| label: pregunta-1-2-3
+df <- readxl::read_excel("/home/gonzalo/Downloads/dataset actividad I.xlsx") |>
+    mutate(grupo = factor(grupo))
+df |> glimpse()
+```
+
+## Pregunta 4
+
+Calcular la media, mediana, desviación estándar para las variables numéricas.
+
+```{r}
+df |>
+  summarise_if(
+      is.numeric,
+      list(media=mean, mediana=median, std_dev=sd)
+  )
+```
+
+## Pregunta 5
+
+Calcular la correlación lineal entre las variables "var_1" y "var_2" y realizar un diagrama de dispersión entre ambas
+
+### Correlación
+
+```{r}
+#| label: correlation
+df |>
+  select(var_1, var_2) |>
+  cor()
+```
+
+### Diagrama de dispersión
+
+```{r}
+#| label: dispersion-plot
+df |>
+  ggplot(aes(x=var_1, y=var_2)) +
+  geom_point(color="cornflowerblue") +
+  labs(
+      x="Variable 1",
+      y="Variable 2",
+      title="Relación entre la variable 1 y 2."
+  ) +
+  theme_minimal()
+```
+
+## Pregunta 6
+
+Cambiar el nombre de la variable grupo y llamarle G
+
+```{r}
+#| label: pregunta-6
+df <- df |>
+  rename(g = grupo)
+df |> head()
+```
+
+## Pregunta 7
+
+Calcular la media, desviación estándar, para cada una de las variables y la correlación lineal, segmentadas por la variable grupo (G). Interpretar los resultados obtenidos.
+
+```{r}
+#| label: pregunta-7
+df |>
+  group_by(g) |>
+  summarise_all(
+      list(media=mean, mediana=median, std_dev=sd, correlacion=~cor(.x, var_2))
+  )
+```
+
+## Pregunta 8
+
+Realizar un diagrama de dispersión en donde el color de los puntos indiquen a que grupo pertenecen.
+
+```{r}
+#| label: pregunta-8
+df |>
+  ggplot(aes(x=var_1, y=var_2, color=g)) +
+  geom_point() +
+  labs(
+      x="Variable 1",
+      y="Variable 2",
+      title="Relación entre la variable 1 y 2."
+  ) +
+  theme_minimal()
+```
+
+## Pregunta 9
+
+Realizar un diagrama de dispersión segmentado por grupo.
+
+```{r}
+#| label: pregunta-9
+df |>
+  ggplot(aes(x=var_1, y=var_2)) +
+  geom_point() +
+  labs(
+      x="Variable 1",
+      y="Variable 2",
+      title="Relación entre la variable 1 y 2."
+  ) +
+  facet_wrap(~ g) +
+  theme_bw()
+```
+
+## Pregunta 10
+
+Repetir la visualización anterior, pero agregando una nueva capa que describa la relación entre las dos variables.
+
+```{r}
+df |>
+  ggplot(aes(x=var_1, y=var_2)) +
+  geom_point() +
+  labs(
+      x="Variable 1",
+      y="Variable 2",
+      title="Relación entre la variable 1 y 2."
+  ) +
+  geom_smooth(se=FALSE) +
+  facet_wrap(~ g) +
+  theme_bw()
+```
