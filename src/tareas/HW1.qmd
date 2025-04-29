@@ -148,7 +148,6 @@ gapminder_cat |>
     aes(x=categoria)
   ) +
   geom_bar() +
-  # geom_text(aes(label = cant), hjust = -.1, colour = "black") +
   labs(
     title="Cantidad de observaciones por categoria de las variables numéricas.",
     subtitle="Las variables fueron divididas en 3 partes iguales (aproximadamente)",
@@ -233,22 +232,36 @@ region_labels <- tibble(
 ```{r}
 #| label: ejercicio_19
 
-
+gapminder_join <- gapminder |>
+  left_join(region_labels, by="continent")
+gapminder_join
 ```
 
 1.10. Mover la variable `pop` al inicio del dataset. El resultado almacenalo en un nuevo objeto llamado `gapminder_pop_first`.
 
 ```{r}
 #| label: ejercicio_110
-
+gapminder_pop_first <- relocate(gapminder, pop, .before = 1)
+gapminder_pop_first
 ```
 
 1.11. Extraer una muestra aleatoria de aproximadamente el 10% observaciones y comparar el promedio de `lifeExp` por continente con el de la base completa. El resultado de la muestra guardalo en `sample10_gapminder` Explicar de forma "intuitiva" porque existen diferencias
 
 ```{r}
 #| label: ejercicio_111
-
-
+set.seed(1922)
+sample10_gapminder <- gapminder |>
+  slice_sample(prop=0.1) |>
+  group_by(continent) |>
+  summarise(mean_lifeExp = mean(lifeExp)) |>
+  inner_join(
+    gapminder |>
+      group_by(continent) |>
+      summarise(mean_base_total = mean(lifeExp)),
+    by="continent"
+  )
+sample10_gapminder
+# La media de una muestra es una estimación de la verdadera media de toda la población (que en este caso es la esperanza de vida para el período dado). Por falta de observaciones de la población total, ésta va a moverse en relación a los que quedaron en la muestra.
 ```
 
 1.12. Filtrar por el año 2007, crear una variable categórica de `gdpPercap` (al igual que lo realizado en el punto 1.4), agrupar por `continent` y categoría, y calcular el promedio de `lifeExp`. Guardar el resultado en un nuevo objeto llamado `summary_gdpPercap_lifeExp`.
@@ -256,7 +269,20 @@ region_labels <- tibble(
 ```{r}
 #| label: ejercicio_112
 
+summary_gdpPercap_lifeExp <- gapminder |>
+  filter(year == 2007) |>
+  mutate(
+    cat_gdpPercap = cut(
+        gdpPercap, 
+        breaks = quantile(gdpPercap, probs = c(0, 1/3, 2/3, 1), na.rm = TRUE),
+        labels=c("bajo", "medio", "alto"),
+        include.lowest=T
+    )
+  ) |>
+  group_by(continent, cat_gdpPercap) |>
+  summarise(mean_lifeExp = mean(lifeExp))
 
+summary_gdpPercap_lifeExp
 ```
 
 1.13. Estandarizar las variables `lifeExp`, `gdpPercap` y `pop` y luego calcular sus medias y desvíos estándar. Guardar el resultado en un nuevo objeto llamado `summary_estandarizado`.
@@ -264,14 +290,28 @@ region_labels <- tibble(
 ```{r}
 #| label: ejercicio_113
 
+summary_estandarizado <- gapminder |>
+  mutate(across(where(is.numeric) & !c(year), scale)) |>
+  summarise(across(where(is.numeric) & !c(year), list(mean=~ round(mean(.), 2), sd=sd)))
 
+summary_estandarizado
 ```
 
 1.14. Calcular el cambio en esperanza de vida entre años (utilizar la función `lag`) para cada país y agrupar según si aumentó o no. Comparar el `gdpPercap` promedio en 2007 según esa clasificación. Guardar el resultado en un nuevo objeto llamado `summary_lifeExp_gdpPercap`.
 
 ```{r}
 #| label: ejercicio_114
-
+summary_lifeExp_gdpPercap <- gapminder |>
+  group_by(country) |>
+  mutate(
+    lifeExp_lag1 = lag(lifeExp, default=0, order_by = year),
+    aumento_lifeExp = lifeExp > lifeExp_lag1
+  ) |>
+  group_by(year, aumento_lifeExp) |>
+  summarise(mean_gdpPercap = mean(gdpPercap)) |>
+  filter(year == 2007)
+  
+summary_lifeExp_gdpPercap
 ```
 
 ------------------------------------------------------------------------
