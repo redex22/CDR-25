@@ -3,12 +3,11 @@ title: "Actividad 2: Data Wrangling y Data Visualization de películas"
 format: 
   html:
     code-fold: true
+    title-block-banner: true
 execute:
   warning: false
-author: Gonzalo Ruiz @ gonzaaruizz22@gmail.com
+author: Gonzalo Ruiz <gonzaaruizz22@gmail.com>
 ---
-
-## Objetivo
 
 Explorar, transformar y visualizar datos del dataset `movies` usando funciones del tidyverse
 
@@ -22,7 +21,6 @@ Explorar, transformar y visualizar datos del dataset `movies` usando funciones d
 
 library(tidyverse)
 library(ggplot2movies)
-
 ```
 
 ```{r}
@@ -79,19 +77,18 @@ Es una distribución asimétrica negativa (con cola hacia la izquierda) con [med
 #| label: pregunta4
 movies |>
   slice_max(order_by=votes, n=10, na_rm=T) |>
-  select(title, rating) |>
-  arrange(desc(rating))
+  select(title, votes)
 ```
 
 ## Parte 2 - Trasnformación y análisis
 
 5.  Usá `transmute()` para crear un nuevo data frame con:
 
-    - título
-    - año
-    - duración en horas (longitud / 60)
-    - voto en millones (votes / 1e6)
-    
+    -   título
+    -   año
+    -   duración en horas (longitud / 60)
+    -   voto en millones (votes / 1e6)
+
 ```{r}
 #| label: pregunta5
 movies_transmuted <- movies |>
@@ -103,12 +100,13 @@ movies_transmuted <- movies |>
   )
 movies_transmuted
 ```
-6. Filtrar películas posteriores al 2000 con más de 10.000 votos y hacé un diagrama de dispersión (scatterplot) de duración vs rating
+
+6.  Filtrar películas posteriores al 2000 con más de 10.000 votos y hacé un diagrama de dispersión (scatterplot) de duración vs rating
 
 ```{r}
 #| label: pregunta6
 movies |>
-  filter(year >= 2000 & votes > 10e4) |>
+  filter(year > 2000, votes > 10e4) |>
   ggplot(aes(x=length, y=rating)) +
     geom_point(color="steelblue4") +
     labs(
@@ -119,17 +117,19 @@ movies |>
     )
 ```
 
-7. Agregar una columna que indique la década (`decada`) y calcular el rating promedio por década
+7.  Agregar una columna que indique la década (`decada`) y calcular el rating promedio por década
 
 ```{r}
 #| label: pregunta7
 
+movies <- movies |>
+  mutate(decada = round(year - year %% 10))
 movies |>
-  mutate(decada = round(year - year %% 10)) |>
   group_by(decada) |>
   summarise(promedio = rating |> mean() |> round(3))
 ```
-8. Usar `slice_sample()` para tomar una muestra aleatoria de 20 películas estrenadas después del 2010
+
+8.  Usar `slice_sample()` para tomar una muestra aleatoria de 20 películas estrenadas después del 2010
 
 ```{r}
 #| label: pregunta8
@@ -138,4 +138,102 @@ movies |>
   slice_sample(n=20)
 ```
 
-## Parte 3 -  Genéros y resumen
+## Parte 3 - Genéros y resumen
+
+9. Usa `across()` para crear una nueva columna que indique cuántos genéros tiene una pelicula (suma todas las columnas de géneros).
+
+```{r}
+#| label: pregunta9
+movies <- movies |>
+  mutate(cant_generos = rowSums(across(Action:Short)))
+movies |> select(title, cant_generos)
+```
+
+10. Usa `group_by()` y `summarise()` para calcular el rating promedio por genéro. Grafica el resultado con un grafico de barras ordenado
+```{r}
+#| label: pregunta10
+movies |>
+  pivot_longer(Action:Short, names_to = "genero", values_to = "es_genero") |>
+  filter(es_genero != 0) |>
+  select(-es_genero) |>
+  group_by(genero) |>
+  summarise(media_rating = mean(rating)) |>
+  ggplot(aes(x=reorder(genero, media_rating), y=media_rating)) +
+  geom_col() +
+  coord_flip()
+```
+
+## Parte 4 - Visualización
+
+11. Hace un gráfico de densidad del rating por clasificación MPAA (`mpaa`) usando `fill = mpaa`
+```{r}
+#| label: pregunta11
+movies |>
+  ggplot(aes(x=rating, fill=mpaa)) +
+  geom_density(alpha=0.25)
+```
+12. Usa `facet_wrap()` para comparar la distribucion del rating por decada
+```{r}
+#| label: pregunta12
+movies |>
+  ggplot(aes(x=rating, fill=mpaa)) +
+  geom_density(alpha=0.2) +
+  facet_wrap(~ decada)
+```
+
+13. Hace un gráfico de lineas que muestre la cantidad de películas por año.
+```{r}
+#| label: pregunta13
+movies |>
+  group_by(year) |>
+  summarise(cant_peliculas=n()) |>
+  ggplot(aes(x=year, y=cant_peliculas)) +
+    geom_line() +
+    theme_bw()
+```
+14. Hace un gráfico de puntos (`geom_point`) con `votes` en el eje x y `rating` en el eje y, coloreado por la cantidad de generos de cada pelicula.
+```{r}
+#| label: pregunta14
+movies |>
+  ggplot(aes(y=rating, x=votes, color=factor(cant_generos))) +
+  geom_point() +
+  theme_bw()
+```
+## Parte 5 - Selección y joins
+
+15. Usa `select()` con:
+
+-   `starts_with("A")`
+
+-   `ends_with("ion")`
+
+-   `contains("rat")`
+
+```{r}
+#| label: pregunta15
+movies |>
+  select(starts_with("A"), ends_with("ion"), contains("rat"))
+```
+
+16. Cargá el archivo `peliculas_info_extra.csv` hace un `left_join()` con `movies` usando la variable `title`. Mostra el rating promedio por director de esa tabla y hace un grafico de barras con las nominaciones al Oscar.
+```{r}
+#| label: pregunta16-a
+info_extra <- read_csv("data/actividades/2/peliculas_info_extra.csv")
+movies |>
+  left_join(info_extra, by="title") |>
+  filter(!is.na(director)) |>
+  group_by(director) |>
+  summarise(media_rating = mean(rating, na.rm=T))
+```
+
+```{r}
+#| label: pregunta16-b
+info_extra |>
+  filter(!is.na(nominaciones_oscar)) |>
+  ggplot(aes(x=reorder(title, nominaciones_oscar), y=nominaciones_oscar)) +
+  geom_col(fill="steelblue") +
+  coord_flip() +
+  labs(title="Top de peliculas con más nominaciones", y="Cantidad de nominaciones", x="Nombre de la pelicula")
+  theme_bw()
+```
+
