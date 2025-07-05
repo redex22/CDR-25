@@ -1,0 +1,60 @@
+---
+title: "Estimación con muestras aleatorias"
+author: "Ciencia de datos con R"
+format: html
+editor: visual
+---
+
+## paquetes
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(srvyr)
+```
+
+
+## carga ECH
+
+```{r}
+ s =  haven::read_sav('P_2019_Terceros.sav')
+```
+
+Seleccionamos Montevideo, nos quedamos con algunas variables y creamos otras
+```{r}
+s = s %>% filter(dpto==1, mes<=3) %>% 
+  transmute(numero, 
+            nper,
+            sexo=e26,
+            edad=e27,
+            ingreso=PT1,
+            ocupado=case_when(pobpcoac==2 ~ 1, TRUE ~ 0),
+            desocupado=case_when(pobpcoac>=3 & pobpcoac<=5 ~ 1, TRUE ~ 0 ),
+            pet= case_when(edad>=14 ~ 1, TRUE ~ 0),
+            activo=ocupado+desocupado,
+            pobreza=pobre06,
+            w=pesoano)
+```
+
+```{r}
+head(s)
+```
+
+Carga base de datos con los estratos y los clusters (UPMs) de la ECH
+```{r}
+info_design= haven::read_sav('ESTRATO_UPM_ECH2019.sav')
+```
+
+
+Le pegamos la información del diseño muestral a la muestra
+
+```{r}
+
+```
+
+
+Posteriomente definimos el diseño muestral únicamente indicando los estratos y las UPM
+
+```{r}
+
+```
+

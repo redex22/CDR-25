@@ -1,0 +1,174 @@
+---
+title: "Actividad: Clasificación de correos spam con tidymodels"
+format: html
+author: Gonzalo Ruiz <gonzaaruizz22@gmail.com>
+---
+
+## Introducción
+
+------------------------------------------------------------------------
+
+En esta actividad vamos a trabajar con un conjunto de datos que contiene información sobre **4.601 correos electrónicos** , cada uno etiquetado como **spam** o **no spam**. El objetivo es entrenar dos modelos de clasificación binaria: un **árbol de decisión** y un **random forest** , usando tidymodels. Después vamos a comparar cómo se desempeña cada modelo y analizar cuáles son las variables más importantes para detectar correos sospechosos.
+
+## Sobre la base de datos
+
+Los datos provienen del paquete (\^) kernlab y están organizados en un (\^) data.frame con **4601 filas y 58 columnas**. El dataset incluye: 
+
+- **48 variables** que indican la frecuencia relativa de aparición de palabras en el correo (por ejemplo: business, free, money). Algunas variables empiezan con num (como num650, num000) y representan la frecuencia de ciertos números. 
+
+- **6 variables** que indican la frecuencia relativa de ciertos caracteres especiales:
+  + charSemicolon, charRoundbracket, charSquarebracket, charExclamation, charDollar, charHash. 
+
+- **3 variables** que resumen el uso de letras en mayúsculas:
+  + capitalAve, capitalLong, capitalTotal. 
+
+- **1 variable objetivo** : type, que indica si el correo es "spam" o "nonspam".
+
+El dataset incluye **2.788 correos no spam** y **1.813 spam**. Los correos spam cubren una gran variedad de temas: publicidad, esquemas para hacer dinero, cadenas, etc. 
+
+Los correos no spam fueron recolectados de mails laborales y personales, por lo que aparecen nombres y códigos que funcionan como indicadores de correos legítimos (por ejemplo, (\^) 'george' o (\^) '650').
+
+Esto plantea un desafío habitual: **algunos indicadores son útiles en contextos específicos pero no generalizables**. Para construir un filtro antispam robusto, se necesita una colección amplia y diversa de correos legítimos.
+
+## Objetivo
+
+---
+
+Vamos a entrenar dos modelos predictivos para detectar spam y comparar sus resultados.
+
+## 1. Cargar los paquetes y la base
+
+```{r warning=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(kernlab)
+library(rpart.plot)
+library(vip)
+```
+
+```{r}
+# Cargar base
+data(spam)
+spam <- as_tibble(spam) |>
+  mutate(type=as_factor(type))
+```
+
+
+## 2. Análisis exploratorio
+
+---
+
+Realizá un análisis exploratorio para familiarizarte con los datos:
+
+- Explorá la estructura de los datos con glimpse() o summary().
+
+```{r}
+glimpse(spam)
+summary(spam)
+```
+
+
+- Mostrá la proporción de correos spam y no spam con un count() y un gráfico de barras.
+
+- Visualizá cómo se comportan algunas variables clave según el tipo de correo. Usá gráficos de densidad
+(geom_density) para comparar las distribuciones entre spam y no spam. Por ejemplo:
+  + free: frecuencia de la palabra “free”.
+  + charExclamation: frecuencia del signo de exclamación (!).
+  + capitalTotal: total de letras en mayúsculas.
+
+Estos gráficos te van a ayudar a detectar patrones que distinguen los correos spam de los legítimos. Prueba transformar las variables, por ejemplo, utilizando la raíz cuadrada para mejorar la visualización.
+
+## 3. División en entrenamiento y prueba
+
+Divide el dataset en train y test utilizando una proporción del 0.80 y utiliza `strata=type` , el cual, **sirve para mantener la misma proporción de clases en ambos datasets**.
+
+```{r}
+set.seed(1922)
+train_test <- initial_split(spam, prop=0.8, strata=type)
+train_df <- training(train_test)
+test_df <- testing(train_test)
+```
+
+## 4. Árbol de decisión
+
+- Definí el modelo con decision_tree() y motor "rpart"
+
+```{r}
+modelo <- decision_tree(tree_depth=10) |>
+  set_engine("rpart") |>
+  set_mode("classification")
+```
+
+- Entrenalo con fit()
+
+```{r}
+model_fitted <- modelo |>
+  fit(type ~ ., data=train_df)
+```
+
+- Visualizá el árbol con rpart.plot
+
+```{r}
+model_fitted %>%
+  extract_fit_engine() %>%
+  rpart.plot()
+```
+
+- Hacé predicciones
+
+```{r}
+augment(model_fitted, new_data=test_df)
+```
+
+- Calculá métricas con metric_set
+
+```{r}
+metricas <- metric_set(accuracy, precision, recall, f_meas)
+augment(model_fitted, new_data=test_df) |>
+  metricas(truth=type, estimate=.pred_class)
+```
+
+
+## 5. Random Forest
+
+- Definí el modelo con rand_forest() y motor "ranger"
+
+- Usá estos hiperparámetros : trees = 500, min_n = 5
+
+```{r}
+bosque_aleatorio <- rand_forest(trees=500, min_n=5) |>
+  set_engine("ranger", importance="impurity") |>
+  set_mode("classification")
+```
+
+- Entrenalo
+
+```{r}
+bosque_fitted <- bosque_aleatorio |>
+  fit(type ~ ., data=train_df)
+```
+
+- Hacé predicciones y calculá métricas
+
+```{r}
+augment(bosque_fitted, new_data=test_df) |>
+  metricas(truth=type, estimate=.pred_class) |>
+  mutate(dataset = "testing") |>
+  bind_rows(
+    augment(bosque_fitted, new_data=train_df) |>
+      metricas(truth=type, estimate=.pred_class) |>
+      mutate(dataset = "training")
+  )
+```
+
+- Usá (\^) vip() para ver las variables más importantes
+
+```{r}
+vi(bosque_fitted)
+```
+
+## 6. Compará los modelos
+
+- ¿Cuál modelo funcionó mejor?
+
+- ¿Qué variables parecen claves para detectar spam?
