@@ -50,3 +50,6 @@ rsconnect/
 
 /.quarto/
 src/actividades/*/*_files
+proyecto/*.pdf
+proyecto/*.html
+proyecto/*_files

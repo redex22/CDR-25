@@ -1,0 +1,156 @@
+---
+title: "Proyecto final Ciencia de Datos con R:\nMicro, pequeñas y medianas empresas en el Uruguay."
+title-block-banner: true
+author: "Gonzalo Ruiz <gonzaaruizz22@gmail.com>"
+format:
+  pdf:
+    toc: true
+    toc-title: "Indice"
+  html:
+    toc: true
+    toc-title: "Indice"
+    code-fold: true
+bibliography: references.bib
+bibliographystyle: apa
+---
+
+## Introducción
+
+## Datos, datos y más datos
+
+Para el siguiente análisis utilizaremos datos de múltiple fuentes que nos ayudarán a explicar el fenómeno de las empresas de distinto tamaño en Uruguay a través de variables indicadoras de la situación económica del país y de variables relacionadas a las empresas mencionadas.
+
+Las fuentes utilizadas fueron extraídas de:
+
+-   @ande2024
+-   Informe IDERE-UY (@idereuy2024)
+-   Observatorio Territorio Uruguay -- OPP (@opp2018)
+
+###  Descripción de variables
+
+| Variable                                               | Descripción                                                                                        |
+|-------------------------------|-----------------------------------------|
+| anio                                                   | Año de referencia de la observación.                                                               |
+| departamento                                           | Nombre del departamento (en Uruguay) donde se registra la información.                             |
+| tamanio                                                | Clasificación del tamaño de las empresas (ej. micro, pequeña, mediana, etc.).                      |
+| sector                                                 | Sector económico al que pertenece la empresa (ej. industria, servicios, etc.).                     |
+| n_empresas                                             | Número total de empresas registradas.                                                              |
+| n_nacimientos                                          | Número total de nuevas empresas creadas.                                                           |
+| n_muertes                                              | Número de empresas que dejaron de operar.                                                          |
+| alfabetismo                                            | Tasa de alfabetismo.                                                                               |
+| accesos_a_estudios_terciarios                          | Población entre 25 y 65 años que accede a estudios terciarios(%).                                  |
+| anios_de_educacion_promedio                            | Promedio de años de educación de la población de 25 años y más.                                    |
+| promocion_educacion_media_cb                           | Porcentaje de promoción en ciclo básico de educación media pública.                                |
+| pobreza                                                | Personas en hogares en situación de pobreza (%).                                                   |
+| informalidad                                           | Informalidad de los ocupados (%).                                                                  |
+| desempleo_en_jovenes                                   | Cociente entre tasa de desempleo de jóvenes (14-29 años) y tasa general.                           |
+| gini                                                   | Coeficiente de Gini (ingreso de los hogares).                                                      |
+| acceso_a_internet                                      | Hogares con conexión a internet (%).                                                               |
+| ingresos_de_los_hogares                                | Relación entre el ingreso per cápita de los hogares del departamento y el valor para el país.      |
+| tasa_de_desempleo                                      | Tasa de desempleo.                                                                                 |
+| porcentaje_de_personal_presupuestado_en_la_intendencia | Porcentaje de personal presupuestado en el total de funcionarios de los gobiernos departamentales. |
+| part_act_econ                                          | Participación porcentual del departamento en la actividad económica país.                          |
+
+## Ánalisis exploratorio
+
+```{r}
+#| label: librerias
+#| include: false
+library(tidyverse)
+library(tidymodels)
+library(ggplot2)
+```
+
+```{r}
+#| label: datasets
+# Participacion en la actividad economica
+act_econ_df <- read_delim(
+  here::here("data/proyecto/indicadores/participacion-departamental-actividad-economica.csv")
+) |>
+  pivot_longer(cols = where(is.numeric), names_to="anio", values_to="part_act_econ") |>
+  mutate(anio = as.character(anio))
+
+# Indicadores de desarrollo socio-economico
+idere_df <- readxl::read_xlsx(
+  here::here("data/proyecto/indicadores/idere.xlsx"),
+  sheet = 1,
+) |>
+  rename_with(~ tolower(gsub(" ", "_", .x, fixed=T))) |>
+  rename(
+    gini="gini_(distribución_del_ingreso)",
+    ingresos_de_los_hogares="ingresos_de_los_hogares_(en_proporción_del_promedio_país)"
+  ) |>
+  rename_with(~ chartr("áéíóú", "aeiou", .x)) |>
+  rename_with(~ gsub("ñ", "ni", .x, fixed=T)) |>
+  filter(!departamento %in% c("Promedio", "Máximo", "Mínimo")) |>
+  select(
+    departamento,
+    anio,
+    alfabetismo,
+    accesos_a_estudios_terciarios,
+    anios_de_educacion_promedio,
+    promocion_educacion_media_cb,
+    pobreza,
+    informalidad,
+    desempleo_en_jovenes,
+    gini,
+    acceso_a_internet,
+    ingresos_de_los_hogares,
+    tasa_de_desempleo,
+    porcentaje_de_personal_presupuestado_en_la_intendencia
+  ) |>
+  mutate(anio = as.character(anio))
+
+pymes_df <- list.files("data/proyecto/pymes/n-empresas", full.names = T) |>
+  lapply(readxl::read_xlsx) |>
+  bind_rows() |>
+  rename_with(~ tolower(gsub("ñ", "ni", .x, fixed=T))) %>%
+  rename(n_empresas="valor") |>
+  select(-indicador) |>
+  left_join(
+    list.files("data/proyecto/pymes/n-nacimientos", full.names = T) |>
+    lapply(readxl::read_xlsx) |>
+    bind_rows() |>
+    rename_with(~ tolower(gsub("ñ", "ni", .x, fixed=T))) |>
+    rename(n_nacimientos="valor") |>
+    select(-indicador),
+    by=c("anio", "departamento", "tamanio", "sector")
+  ) |>
+  left_join(
+    list.files("data/proyecto/pymes/n-muertes", full.names = T) |>
+    lapply(readxl::read_xlsx) |>
+    bind_rows() |>
+    rename_with(~ tolower(gsub("ñ", "ni", .x, fixed=T))) |>
+    rename(n_muertes="valor") |>
+    select(-indicador),
+    by=c("anio", "departamento", "tamanio", "sector")
+  ) |>
+  mutate(anio = as.character(anio)) |>
+  left_join(
+    idere_df,
+    by=c("departamento", "anio")
+  ) |>
+  left_join(
+    act_econ_df,
+    by=c("departamento", "anio")
+  ) |>
+  mutate_at(vars(anio:sector), as.factor)
+```
+
+## Preprocesamiento de datos
+
+```{r}
+pymes_df <- pymes_df |>
+  mutate(across(starts_with("n_"), ~ as.numeric(na_if(.x, "SIN DATOS")))) |>
+  mutate(across(where(is.numeric), ~ round(.x, 3)))
+pymes_df |>
+  arrow::write_parquet("data/proyecto/pymes_uruguay.parquet")
+pymes_df |>
+  write_csv("data/proyecto/pymes_uruguay.csv")
+pymes_df |> colnames()
+```
+
+### Referencias
+
+::: {#refs}
+:::
