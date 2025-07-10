@@ -13,22 +13,18 @@ format:
 library(tidyverse)
 ```
 
-
 ## Introducción
 
-Actualmente me encuentro cursando un Proyecto de Investigación Estudiantil, y es dentro de éste contexto que es del interés del equipo ir conociendo los aportes al desarrollo territorial de las empresas PYMES del Uruguay.
-¿Cómo se constituyen? ¿Cómo y cuánto participan de la actividad económica? ¿Está sujeta a la situación socio-educativa del país?
+Actualmente me encuentro cursando un Proyecto de Investigación Estudiantil, y es dentro de éste contexto que es del interés del equipo ir conociendo los aportes al desarrollo territorial de las empresas PYMES del Uruguay. ¿Cómo se constituyen? ¿Cómo y cuánto participan de la actividad económica? ¿Está sujeta a la situación socio-educativa del país?
 
 ## Descripción
 
-::: {.incremental}
-
+::: incremental
 -   Datos extraídos de múltiples fuentes
-  -   ANDE, IDERE, OPP
--   La serie comprende desde el año 2008 hasta el 2022(*)
--   Está desagregada a nivel anual, departamental, por tamaño de empresa y sector(*) en la actividad económica
+    -   ANDE, IDERE, OPP
+-   La serie comprende desde el año 2008 hasta el 2022(\*)
+-   Está desagregada a nivel anual, departamental, por tamaño de empresa y sector(\*) en la actividad económica
 -   Consta de 17775 y 20 variables
-
 :::
 
 ## Variables
@@ -45,10 +41,9 @@ Actualmente me encuentro cursando un Proyecto de Investigación Estudiantil, y e
 
 -   pobreza, informalidad, ingreso de los hogares, ...
 
----
+------------------------------------------------------------------------
 
-::: {.panel-tabset}
-
+::: panel-tabset
 ### OPP
 
 ```{r}
@@ -117,70 +112,60 @@ list.files("data/proyecto/pymes/n-empresas", full.names = T) |>
 
 -   Temporalidad
 
-![](pymes_files/figure-html/pct-faltantes-1.png){.absolute top=340 left=0 width="450" height="350"}
-![](pymes_files/figure-html/pct-faltantes-sin-sector-1.png){.absolute top=340 right=50 width="450" height="350"}
----
+![](pymes_files/figure-html/pct-faltantes-1.png){.absolute top="340" left="0" width="450" height="350"} ![](pymes_files/figure-html/pct-faltantes-sin-sector-1.png){.absolute top="340" right="50" width="450" height="350"} ---
 
 ## PYMES
 
-![](pymes_files/figure-html/dist-num-vars-pymes-plots-1){.absolute top=100 left=0 width="450" height="250"}
+![](pymes_files/figure-html/dist-num-vars-pymes-plots-1){.absolute top="100" left="0" width="450" height="250"}
 
-![](pymes_files/figure-html/dist-num-vars-pymes-plots-2){.absolute top=100 right=0 width="450" height="250"}
+![](pymes_files/figure-html/dist-num-vars-pymes-plots-2){.absolute top="100" right="0" width="450" height="250"}
 
-![](pymes_files/figure-html/dist-num-vars-pymes-plots-3){.absolute top=375 left=0 width="450" height="250"}
+![](pymes_files/figure-html/dist-num-vars-pymes-plots-3){.absolute top="375" left="0" width="450" height="250"}
 
-![](pymes_files/figure-html/dist-num-vars-pymes-plots-3){.absolute top=375 right=0 width="450" height="250"}
+![](pymes_files/figure-html/dist-num-vars-pymes-plots-3){.absolute top="375" right="0" width="450" height="250"}
 
 ## Y con las otras variables?
 
-::: {.incremental}
+![](pymes_files/figure-html/interaccion-n-empresas-vars-educ-1){.absolute top="100" left="100" width="640" height="480"}
 
-![](pymes_files/figure-html/interaccion-n-empresas-vars-educ-1){.absolute top=100 left=100 width="640" height="480"}
+------------------------------------------------------------------------
 
----
-
-![](pymes_files/figure-html/interaccion-n-empresas-econ-vars-1){.absolute top=100 left=100 width="640" height="480"}
-
-:::
-
+![](pymes_files/figure-html/interaccion-n-empresas-econ-vars-1){.absolute top="100" left="100" width="640" height="480"}
 
 ## Cómo evolucionó la variable a lo largo del tiempo?
 
-![](pymes_files/figure-html/unnamed-chunk-3-1){.absolute top=200 left=0 width="550" height="350"}
+![](pymes_files/figure-html/unnamed-chunk-3-1){.absolute top="200" left="0" width="550" height="350"}
 
-![](pymes_files/figure-html/unnamed-chunk-4-1){.absolute top=300 right=0 width="550" height="350"}
-
+![](pymes_files/figure-html/unnamed-chunk-4-1){.absolute top="300" right="0" width="550" height="350"}
 
 ## Modelado
 
 -   Se experimentó con 3 modelos distintos
-  -   lm, random forest, xgboost
+-   lm, random forest, xgboost
 -   Se intentó contemplar no linealidad y robustez ante las categorias
 
 ```{r}
 read_csv(here::here("data/proyecto/metricas.csv"))
 ```
 
-
----
+------------------------------------------------------------------------
 
 ```{r}
 read_csv(here::here("data/proyecto/estimacion.csv")) |>
   head(15)
 ```
 
-
 ## Importancia de las variables independientes
 
-- *Random Forest*
+-   *Random Forest*
 
-![](pymes_files/figure-html/unnamed-chunk-15-1){.absolute top=215 left=330 width="640" height="480"}
+![](pymes_files/figure-html/unnamed-chunk-15-1){.absolute top="215" left="330" width="640" height="480"}
 
----
+------------------------------------------------------------------------
 
-- *XGBoost*
+-   *XGBoost*
 
-![](pymes_files/figure-html/unnamed-chunk-16-1){.absolute top=150 left=200 width="640" height="480"}
+![](pymes_files/figure-html/unnamed-chunk-16-1){.absolute top="150" left="200" width="640" height="480"}
 
 # Dudas? Consultas? Sugerencias?
 

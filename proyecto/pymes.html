@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Gonzalo Ruiz gonzaaruizz22@gmail.com">
+
+<title>Proyecto final Ciencia de Datos con R: Micro, pequeñas y medianas empresas en el Uruguay.</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="pymes_files/libs/clipboard/clipboard.min.js"></script>
+<script src="pymes_files/libs/quarto-html/quarto.js"></script>
+<script src="pymes_files/libs/quarto-html/popper.min.js"></script>
+<script src="pymes_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="pymes_files/libs/quarto-html/anchor.min.js"></script>
+<link href="pymes_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="pymes_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="pymes_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="pymes_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="pymes_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Proyecto final Ciencia de Datos con R: Micro, pequeñas y medianas empresas en el Uruguay.</h1>
+                      </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Gonzalo Ruiz <a href="mailto:gonzaaruizz22@gmail.com" class="email">gonzaaruizz22@gmail.com</a> </p>
+            </div>
+    </div>
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Indice</h2>
+   
+  <ul>
+  <li><a href="#introducción" id="toc-introducción" class="nav-link active" data-scroll-target="#introducción">Introducción</a></li>
+  <li><a href="#datos-datos-y-más-datos" id="toc-datos-datos-y-más-datos" class="nav-link" data-scroll-target="#datos-datos-y-más-datos">Datos, datos y más datos</a>
+  <ul class="collapse">
+  <li><a href="#descripción-de-variables" id="toc-descripción-de-variables" class="nav-link" data-scroll-target="#descripción-de-variables">Descripción de variables</a></li>
+  </ul></li>
+  <li><a href="#ánalisis-exploratorio" id="toc-ánalisis-exploratorio" class="nav-link" data-scroll-target="#ánalisis-exploratorio">Ánalisis exploratorio</a></li>
+  <li><a href="#preprocesamiento-de-datos" id="toc-preprocesamiento-de-datos" class="nav-link" data-scroll-target="#preprocesamiento-de-datos">Preprocesamiento de datos</a></li>
+  <li><a href="#modelado" id="toc-modelado" class="nav-link" data-scroll-target="#modelado">Modelado</a>
+  <ul class="collapse">
+  <li><a href="#separación-en-datos-de-entrenamiento-y-de-validación" id="toc-separación-en-datos-de-entrenamiento-y-de-validación" class="nav-link" data-scroll-target="#separación-en-datos-de-entrenamiento-y-de-validación">Separación en datos de entrenamiento y de validación</a></li>
+  <li><a href="#regresión-lineal" id="toc-regresión-lineal" class="nav-link" data-scroll-target="#regresión-lineal">Regresión lineal</a></li>
+  <li><a href="#árboles" id="toc-árboles" class="nav-link" data-scroll-target="#árboles">Árboles</a></li>
+  <li><a href="#entrenamiento" id="toc-entrenamiento" class="nav-link" data-scroll-target="#entrenamiento">Entrenamiento</a></li>
+  <li><a href="#evaluación" id="toc-evaluación" class="nav-link" data-scroll-target="#evaluación">Evaluación</a></li>
+  <li><a href="#selección-del-mejor-modelo" id="toc-selección-del-mejor-modelo" class="nav-link" data-scroll-target="#selección-del-mejor-modelo">Selección del mejor modelo</a></li>
+  <li><a href="#predicciones" id="toc-predicciones" class="nav-link" data-scroll-target="#predicciones">Predicciones</a></li>
+  <li><a href="#re-evaluación" id="toc-re-evaluación" class="nav-link" data-scroll-target="#re-evaluación">Re-evaluación</a></li>
+  <li><a href="#importancia-de-las-variables-en-los-árboles" id="toc-importancia-de-las-variables-en-los-árboles" class="nav-link" data-scroll-target="#importancia-de-las-variables-en-los-árboles">Importancia de las variables en los árboles</a></li>
+  </ul></li>
+  <li><a href="#referencias" id="toc-referencias" class="nav-link" data-scroll-target="#referencias">Referencias</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="pymes.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<section id="introducción" class="level2">
+<h2 class="anchored" data-anchor-id="introducción">Introducción</h2>
+</section>
+<section id="datos-datos-y-más-datos" class="level2">
+<h2 class="anchored" data-anchor-id="datos-datos-y-más-datos">Datos, datos y más datos</h2>
+<p>Para el siguiente análisis utilizaremos datos de múltiple fuentes que nos ayudarán a explicar el fenómeno de las empresas de distinto tamaño en Uruguay a través de variables indicadoras de la situación económica del país y de variables relacionadas a las empresas mencionadas.</p>
+<p>Las fuentes utilizadas fueron extraídas de:</p>
+<ul>
+<li><span class="citation" data-cites="ande2024">Agencia Nacional de Desarrollo (ANDE) (<a href="#ref-ande2024" role="doc-biblioref">2024</a>)</span></li>
+<li>Informe IDERE-UY (<span class="citation" data-cites="idereuy2024">Rodríguez Miranda et al. (<a href="#ref-idereuy2024" role="doc-biblioref">2024</a>)</span>)</li>
+<li>Observatorio Territorio Uruguay – OPP (<span class="citation" data-cites="opp2018">Observatorio Territorio Uruguay – Oficina de Planeamiento y Presupuesto (OPP) (<a href="#ref-opp2018" role="doc-biblioref">2018</a>)</span>)</li>
+</ul>
+<section id="descripción-de-variables" class="level3">
+<h3 class="anchored" data-anchor-id="descripción-de-variables">Descripción de variables</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 43%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>anio</td>
+<td>Año de referencia de la observación.</td>
+</tr>
+<tr class="even">
+<td>departamento</td>
+<td>Nombre del departamento (en Uruguay) donde se registra la información.</td>
+</tr>
+<tr class="odd">
+<td>tamanio</td>
+<td>Clasificación del tamaño de las empresas (ej. micro, pequeña, mediana, etc.).</td>
+</tr>
+<tr class="even">
+<td>sector</td>
+<td>Sector económico al que pertenece la empresa (ej. industria, servicios, etc.).</td>
+</tr>
+<tr class="odd">
+<td>n_empresas</td>
+<td>Número total de empresas registradas.</td>
+</tr>
+<tr class="even">
+<td>n_nacimientos</td>
+<td>Número total de nuevas empresas creadas.</td>
+</tr>
+<tr class="odd">
+<td>n_muertes</td>
+<td>Número de empresas que dejaron de operar.</td>
+</tr>
+<tr class="even">
+<td>alfabetismo</td>
+<td>Tasa de alfabetismo.</td>
+</tr>
+<tr class="odd">
+<td>accesos_a_estudios_terciarios</td>
+<td>Población entre 25 y 65 años que accede a estudios terciarios(%).</td>
+</tr>
+<tr class="even">
+<td>anios_de_educacion_promedio</td>
+<td>Promedio de años de educación de la población de 25 años y más.</td>
+</tr>
+<tr class="odd">
+<td>promocion_educacion_media_cb</td>
+<td>Porcentaje de promoción en ciclo básico de educación media pública.</td>
+</tr>
+<tr class="even">
+<td>pobreza</td>
+<td>Personas en hogares en situación de pobreza (%).</td>
+</tr>
+<tr class="odd">
+<td>informalidad</td>
+<td>Informalidad de los ocupados (%).</td>
+</tr>
+<tr class="even">
+<td>desempleo_en_jovenes</td>
+<td>Cociente entre tasa de desempleo de jóvenes (14-29 años) y tasa general.</td>
+</tr>
+<tr class="odd">
+<td>gini</td>
+<td>Coeficiente de Gini (ingreso de los hogares).</td>
+</tr>
+<tr class="even">
+<td>acceso_a_internet</td>
+<td>Hogares con conexión a internet (%).</td>
+</tr>
+<tr class="odd">
+<td>ingresos_de_los_hogares</td>
+<td>Relación entre el ingreso per cápita de los hogares del departamento y el valor para el país.</td>
+</tr>
+<tr class="even">
+<td>tasa_de_desempleo</td>
+<td>Tasa de desempleo.</td>
+</tr>
+<tr class="odd">
+<td>porcentaje_de_personal_presupuestado_en_la_intendencia</td>
+<td>Porcentaje de personal presupuestado en el total de funcionarios de los gobiernos departamentales.</td>
+</tr>
+<tr class="even">
+<td>part_act_econ</td>
+<td>Participación porcentual del departamento en la actividad económica país.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="ánalisis-exploratorio" class="level2">
+<h2 class="anchored" data-anchor-id="ánalisis-exploratorio">Ánalisis exploratorio</h2>
+<p>Al trabajar con datos es natural hacerse preguntas sobre la composición y características de los mismos, es en éste siguiente análisis que intentaremos dar respuestas de manera visual y con medidas de resúmenes numéricas para familiarizarnos con nuestra base de datos.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Participacion en la actividad economica</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>act_econ_df <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/proyecto/indicadores/participacion-departamental-actividad-economica.csv"</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">where</span>(is.numeric), <span class="at">names_to=</span><span class="st">"anio"</span>, <span class="at">values_to=</span><span class="st">"part_act_econ"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">anio =</span> <span class="fu">as.character</span>(anio), <span class="at">departamento =</span> <span class="fu">tolower</span>(<span class="fu">trimws</span>(<span class="fu">chartr</span>(<span class="st">"áéíóú"</span>, <span class="st">"aeiou"</span>, departamento))))</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Indicadores de desarrollo socio-economico</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>idere_df <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_xlsx</span>(</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/proyecto/indicadores/idere.xlsx"</span>),</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">sheet =</span> <span class="dv">1</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">tolower</span>(<span class="fu">gsub</span>(<span class="st">" "</span>, <span class="st">"_"</span>, .x, <span class="at">fixed=</span>T))) <span class="sc">|&gt;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">gini=</span><span class="st">"gini_(distribución_del_ingreso)"</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">ingresos_de_los_hogares=</span><span class="st">"ingresos_de_los_hogares_(en_proporción_del_promedio_país)"</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">chartr</span>(<span class="st">"áéíóú"</span>, <span class="st">"aeiou"</span>, .x)) <span class="sc">|&gt;</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">gsub</span>(<span class="st">"ñ"</span>, <span class="st">"ni"</span>, .x, <span class="at">fixed=</span>T)) <span class="sc">|&gt;</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>departamento <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Promedio"</span>, <span class="st">"Máximo"</span>, <span class="st">"Mínimo"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    departamento,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    anio,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    alfabetismo,</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    accesos_a_estudios_terciarios,</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    anios_de_educacion_promedio,</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    promocion_educacion_media_cb,</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    pobreza,</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    informalidad,</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    desempleo_en_jovenes,</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    gini,</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    acceso_a_internet,</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    ingresos_de_los_hogares,</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    tasa_de_desempleo,</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    porcentaje_de_personal_presupuestado_en_la_intendencia</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">anio =</span> <span class="fu">as.character</span>(anio), <span class="at">departamento =</span> <span class="fu">tolower</span>(<span class="fu">trimws</span>(<span class="fu">chartr</span>(<span class="st">"áéíóú"</span>, <span class="st">"aeiou"</span>, departamento))))</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>pymes_df <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">"data/proyecto/pymes/n-empresas"</span>, <span class="at">full.names =</span> T) <span class="sc">|&gt;</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(readxl<span class="sc">::</span>read_xlsx) <span class="sc">|&gt;</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>() <span class="sc">|&gt;</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">tolower</span>(<span class="fu">gsub</span>(<span class="st">"ñ"</span>, <span class="st">"ni"</span>, .x, <span class="at">fixed=</span>T))) <span class="sc">%&gt;%</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">n_empresas=</span><span class="st">"valor"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>indicador) <span class="sc">|&gt;</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list.files</span>(<span class="st">"data/proyecto/pymes/n-nacimientos"</span>, <span class="at">full.names =</span> T) <span class="sc">|&gt;</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>    <span class="fu">lapply</span>(readxl<span class="sc">::</span>read_xlsx) <span class="sc">|&gt;</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_rows</span>() <span class="sc">|&gt;</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">tolower</span>(<span class="fu">gsub</span>(<span class="st">"ñ"</span>, <span class="st">"ni"</span>, .x, <span class="at">fixed=</span>T))) <span class="sc">|&gt;</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">n_nacimientos=</span><span class="st">"valor"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>indicador),</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">by=</span><span class="fu">c</span>(<span class="st">"anio"</span>, <span class="st">"departamento"</span>, <span class="st">"tamanio"</span>, <span class="st">"sector"</span>)</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list.files</span>(<span class="st">"data/proyecto/pymes/n-muertes"</span>, <span class="at">full.names =</span> T) <span class="sc">|&gt;</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>    <span class="fu">lapply</span>(readxl<span class="sc">::</span>read_xlsx) <span class="sc">|&gt;</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_rows</span>() <span class="sc">|&gt;</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">tolower</span>(<span class="fu">gsub</span>(<span class="st">"ñ"</span>, <span class="st">"ni"</span>, .x, <span class="at">fixed=</span>T))) <span class="sc">|&gt;</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">n_muertes=</span><span class="st">"valor"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>indicador),</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">by=</span><span class="fu">c</span>(<span class="st">"anio"</span>, <span class="st">"departamento"</span>, <span class="st">"tamanio"</span>, <span class="st">"sector"</span>)</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">anio =</span> <span class="fu">as.character</span>(anio)) <span class="sc">|&gt;</span></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.character), <span class="sc">~</span> <span class="fu">tolower</span>(<span class="fu">trimws</span>(<span class="fu">chartr</span>(<span class="st">"áéíóú"</span>, <span class="st">"aeiou"</span>, .x))))) <span class="sc">|&gt;</span></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>    idere_df,</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">by=</span><span class="fu">c</span>(<span class="st">"departamento"</span>, <span class="st">"anio"</span>)</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>    act_econ_df,</span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">by=</span><span class="fu">c</span>(<span class="st">"departamento"</span>, <span class="st">"anio"</span>)</span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">departamento =</span> <span class="fu">as.factor</span>(departamento), <span class="at">sector =</span> <span class="fu">as.factor</span>(sector), <span class="at">tamanio =</span> <span class="fu">factor</span>(tamanio, <span class="at">levels=</span>tamanio <span class="sc">|&gt;</span> <span class="fu">unique</span>() <span class="sc">|&gt;</span> <span class="fu">sort</span>(), <span class="at">ordered=</span>T))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<ul>
+<li>¿Cuál es la dimensión de nuestro Dataset?</li>
+</ul>
+<p>Tenemos un Dataset con 17775 observaciones y 20 variables.</p>
+<ul>
+<li>¿Existen duplicados?</li>
+</ul>
+<p>Tenemos 17775 observaciones y si descartamos los duplicados nos queda en: 17775.</p>
+<ul>
+<li><p>¿Cómo está armado nuestro DataFrame? ¿qué variables contiene? Y ejemplos de observaciones.</p>
+<ul>
+<li>Esquema</li>
+</ul></li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pymes_df <span class="sc">|&gt;</span> <span class="fu">glimpse</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 17,775
+Columns: 20
+$ anio                                                   &lt;chr&gt; "2008", "2008",…
+$ departamento                                           &lt;fct&gt; artigas, artiga…
+$ tamanio                                                &lt;ord&gt; micro, micro, m…
+$ sector                                                 &lt;fct&gt; a, b, c, d, e, …
+$ n_empresas                                             &lt;chr&gt; "44", "27", "11…
+$ n_nacimientos                                          &lt;chr&gt; "sin datos", "s…
+$ n_muertes                                              &lt;chr&gt; "8", "6", "21",…
+$ alfabetismo                                            &lt;dbl&gt; 0.7969807, 0.79…
+$ accesos_a_estudios_terciarios                          &lt;dbl&gt; 0.1006619, 0.10…
+$ anios_de_educacion_promedio                            &lt;dbl&gt; 0.2030340, 0.20…
+$ promocion_educacion_media_cb                           &lt;dbl&gt; 0.5909681, 0.59…
+$ pobreza                                                &lt;dbl&gt; 0.2828235, 0.28…
+$ informalidad                                           &lt;dbl&gt; 0.1945994, 0.19…
+$ desempleo_en_jovenes                                   &lt;dbl&gt; 0.7121335, 0.71…
+$ gini                                                   &lt;dbl&gt; 0.4286669, 0.42…
+$ acceso_a_internet                                      &lt;dbl&gt; 0.0682450, 0.06…
+$ ingresos_de_los_hogares                                &lt;dbl&gt; 0.1288986, 0.12…
+$ tasa_de_desempleo                                      &lt;dbl&gt; 0.5135037, 0.51…
+$ porcentaje_de_personal_presupuestado_en_la_intendencia &lt;dbl&gt; 0.4633301, 0.46…
+$ part_act_econ                                          &lt;dbl&gt; 1.5, 1.5, 1.5, …</code></pre>
+</div>
+</div>
+<pre><code>-   Primeras 6 filas</code></pre>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>pymes_df <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 20
+  anio  departamento tamanio sector n_empresas n_nacimientos n_muertes
+  &lt;chr&gt; &lt;fct&gt;        &lt;ord&gt;   &lt;fct&gt;  &lt;chr&gt;      &lt;chr&gt;         &lt;chr&gt;    
+1 2008  artigas      micro   a      44         sin datos     8        
+2 2008  artigas      micro   b      27         sin datos     6        
+3 2008  artigas      micro   c      114        sin datos     21       
+4 2008  artigas      micro   d      1          sin datos     1        
+5 2008  artigas      micro   e      13         sin datos     4        
+6 2008  artigas      micro   f      28         sin datos     6        
+# ℹ 13 more variables: alfabetismo &lt;dbl&gt;, accesos_a_estudios_terciarios &lt;dbl&gt;,
+#   anios_de_educacion_promedio &lt;dbl&gt;, promocion_educacion_media_cb &lt;dbl&gt;,
+#   pobreza &lt;dbl&gt;, informalidad &lt;dbl&gt;, desempleo_en_jovenes &lt;dbl&gt;, gini &lt;dbl&gt;,
+#   acceso_a_internet &lt;dbl&gt;, ingresos_de_los_hogares &lt;dbl&gt;,
+#   tasa_de_desempleo &lt;dbl&gt;,
+#   porcentaje_de_personal_presupuestado_en_la_intendencia &lt;dbl&gt;,
+#   part_act_econ &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<ul>
+<li>Últimas 6 filas</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>pymes_df <span class="sc">|&gt;</span> <span class="fu">tail</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 20
+  anio  departamento   tamanio sector n_empresas n_nacimientos n_muertes
+  &lt;chr&gt; &lt;fct&gt;          &lt;ord&gt;   &lt;fct&gt;  &lt;chr&gt;      &lt;chr&gt;         &lt;chr&gt;    
+1 2021  treinta y tres grandes d      sin datos  &lt;NA&gt;          &lt;NA&gt;     
+2 2021  treinta y tres grandes g      1          &lt;NA&gt;          &lt;NA&gt;     
+3 2021  treinta y tres grandes h      sin datos  &lt;NA&gt;          &lt;NA&gt;     
+4 2021  treinta y tres grandes k      sin datos  &lt;NA&gt;          &lt;NA&gt;     
+5 2021  treinta y tres grandes l      sin datos  &lt;NA&gt;          &lt;NA&gt;     
+6 2021  treinta y tres grandes q      1          &lt;NA&gt;          &lt;NA&gt;     
+# ℹ 13 more variables: alfabetismo &lt;dbl&gt;, accesos_a_estudios_terciarios &lt;dbl&gt;,
+#   anios_de_educacion_promedio &lt;dbl&gt;, promocion_educacion_media_cb &lt;dbl&gt;,
+#   pobreza &lt;dbl&gt;, informalidad &lt;dbl&gt;, desempleo_en_jovenes &lt;dbl&gt;, gini &lt;dbl&gt;,
+#   acceso_a_internet &lt;dbl&gt;, ingresos_de_los_hogares &lt;dbl&gt;,
+#   tasa_de_desempleo &lt;dbl&gt;,
+#   porcentaje_de_personal_presupuestado_en_la_intendencia &lt;dbl&gt;,
+#   part_act_econ &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<ul>
+<li>6 filas aleatorias</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#label: rand6</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>pymes_df <span class="sc">|&gt;</span> <span class="fu">sample_n</span>(<span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 20
+  anio  departamento   tamanio  sector n_empresas n_nacimientos n_muertes
+  &lt;chr&gt; &lt;fct&gt;          &lt;ord&gt;    &lt;fct&gt;  &lt;chr&gt;      &lt;chr&gt;         &lt;chr&gt;    
+1 2022  colonia        micro    r      145        28            16       
+2 2018  soriano        grandes  p      sin datos  sin datos     &lt;NA&gt;     
+3 2022  tacuarembo     medianas j      sin datos  &lt;NA&gt;          &lt;NA&gt;     
+4 2010  treinta y tres pequeñas j      10         sin datos     sin datos
+5 2008  lavalleja      pequeñas c      37         sin datos     2        
+6 2014  rivera         grandes  c      sin datos  &lt;NA&gt;          &lt;NA&gt;     
+# ℹ 13 more variables: alfabetismo &lt;dbl&gt;, accesos_a_estudios_terciarios &lt;dbl&gt;,
+#   anios_de_educacion_promedio &lt;dbl&gt;, promocion_educacion_media_cb &lt;dbl&gt;,
+#   pobreza &lt;dbl&gt;, informalidad &lt;dbl&gt;, desempleo_en_jovenes &lt;dbl&gt;, gini &lt;dbl&gt;,
+#   acceso_a_internet &lt;dbl&gt;, ingresos_de_los_hogares &lt;dbl&gt;,
+#   tasa_de_desempleo &lt;dbl&gt;,
+#   porcentaje_de_personal_presupuestado_en_la_intendencia &lt;dbl&gt;,
+#   part_act_econ &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>Es fácil de observar que existen variables numéricas que contienen observaciones de tipo <code>character</code> representando a valores faltantes y, al mismo tiempo, también observamos la existencia de valores <code>NA</code>.</p>
+<p>Entonces, nos preguntamos:</p>
+<ul>
+<li>¿Cuál es el porcentaje de datos faltantes existe por cadá variable?</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Como se vio en las observaciones seleccionadas, existen datos faltantes representados con texto por lo que necesitaremos pre-procesar esas columnas y normalizar la representación de un dato faltante como <code>NA</code>. Luego formalizaremos este pre-procesamiento como parte del flujo pre-modelado.</p>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>pymes_df <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"n_"</span>), <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="fu">na_if</span>(.x, <span class="st">"SIN DATOS"</span>)))) <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="sc">~</span> <span class="fu">round</span>(.x, <span class="dv">3</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise_all</span>(<span class="sc">~</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(.x))) <span class="sc">|&gt;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="fu">everything</span>(), <span class="at">names_to=</span><span class="st">"variable"</span>, <span class="at">values_to=</span><span class="st">"cant_faltantes"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pct_faltantes =</span> cant_faltantes <span class="sc">*</span> <span class="dv">100</span> <span class="sc">/</span> <span class="fu">nrow</span>(pymes_df)) <span class="sc">|&gt;</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">variable =</span> <span class="fu">fct_reorder</span>(variable, cant_faltantes)) <span class="sc">|&gt;</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>variable, <span class="at">y=</span>pct_faltantes)) <span class="sc">+</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill=</span><span class="st">"skyblue"</span>) <span class="sc">+</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Porcentajes de datos faltantes por variable."</span>, <span class="at">x=</span><span class="st">"Variable"</span>, <span class="at">y=</span><span class="st">"Porcentaje de faltantes"</span>) <span class="sc">+</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/pct-faltantes-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>¿Y si subimos un nivel de agregación ignorando el sector?</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>agg_pymes_df <span class="ot">&lt;-</span> pymes_df <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"n_"</span>), <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="fu">na_if</span>(.x, <span class="st">"SIN DATOS"</span>)))) <span class="sc">|&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="sc">~</span> <span class="fu">round</span>(.x, <span class="dv">3</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(anio, departamento, tamanio) <span class="sc">|&gt;</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"n_"</span>), <span class="sc">~</span> <span class="fu">sum</span>(.x, <span class="at">na.rm =</span> T)), <span class="fu">across</span>(<span class="sc">!</span><span class="fu">starts_with</span>(<span class="st">"n_"</span>) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">matches</span>(<span class="st">"sector"</span>), <span class="sc">~</span> <span class="fu">mean</span>(., <span class="at">na.rm=</span>T))) <span class="sc">|&gt;</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="sc">~</span> <span class="fu">if_else</span>(<span class="fu">is.nan</span>(.), <span class="cn">NA</span>, .)))</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>agg_pymes_df <span class="sc">|&gt;</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(tamanio <span class="sc">!=</span> <span class="st">"grandes"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">!</span><span class="fu">c</span>(anio<span class="sc">:</span>tamanio)) <span class="sc">|&gt;</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), <span class="at">names_to=</span><span class="st">"variable"</span>, <span class="at">values_to=</span><span class="st">"cant_faltantes"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cant_faltantes =</span> <span class="fu">if_else</span>(<span class="fu">is.na</span>(cant_faltantes), <span class="dv">1</span>, <span class="dv">0</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(variable) <span class="sc">|&gt;</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">cant_faltantes =</span> <span class="fu">sum</span>(cant_faltantes)) <span class="sc">|&gt;</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pct_faltantes =</span> cant_faltantes <span class="sc">*</span> <span class="dv">100</span> <span class="sc">/</span> <span class="fu">nrow</span>(agg_pymes_df)) <span class="sc">|&gt;</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">variable =</span> <span class="fu">fct_reorder</span>(variable, cant_faltantes)) <span class="sc">|&gt;</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>variable, <span class="at">y=</span>pct_faltantes)) <span class="sc">+</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill=</span><span class="st">"skyblue"</span>) <span class="sc">+</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">title=</span><span class="st">"Porcentajes de datos faltantes por variable sobre el total de observaciones."</span>,</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle=</span><span class="st">"Aperturado por año, departamento y tamaño."</span>,</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="st">"Variable"</span>,</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="st">"Porcentaje de faltantes"</span></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/pct-faltantes-sin-sector-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Podemos concluir que al estar tan desagregado nuestro Dataset los datos faltantes pasan a ser un problema a tener en cuenta. A partir de este punto realizaremos nuestro análisis con el dataset aperturado por año, departamento y tamaño.</p>
+<ul>
+<li>¿Estos NA pertenecen a algún período de tiempo particular?</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>agg_pymes_df <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(part_act_econ)) <span class="sc">|&gt;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(anio) <span class="sc">|&gt;</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 1
+  anio 
+  &lt;chr&gt;
+1 2019 
+2 2020 
+3 2021 
+4 2022 </code></pre>
+</div>
+</div>
+<p>La serie de la participación en la actividad económica está incompleta para el período 2019-2022.</p>
+<ul>
+<li>¿Cómo se comportan las distintas variables numéricas por tamaño de la empresa? ¿Cómo es su distribución? ¿Y el apartamiento?</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>agg_pymes_df <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">split</span>(<span class="at">f=</span>.<span class="sc">$</span>tamanio) <span class="sc">|&gt;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(\(x) x <span class="sc">|&gt;</span> <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="at">.fns=</span><span class="fu">list</span>(</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">min=</span><span class="sc">~</span><span class="fu">min</span>(., <span class="at">na.rm=</span>T),</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">p25 =</span> <span class="sc">~</span><span class="fu">quantile</span>(., <span class="fl">0.25</span>, <span class="at">na.rm=</span>T),</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">mediana =</span> <span class="sc">~</span><span class="fu">median</span>(., <span class="at">na.rm=</span>T),</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">media =</span> <span class="sc">~</span><span class="fu">mean</span>(., <span class="at">na.rm=</span>T),</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">p75 =</span> <span class="sc">~</span><span class="fu">quantile</span>(., <span class="fl">0.75</span>, <span class="at">na.rm=</span>T),</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">max=</span><span class="sc">~</span><span class="fu">max</span>(., <span class="at">na.rm=</span>T),</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">std_dev =</span> <span class="sc">~</span><span class="fu">sd</span>(., <span class="at">na.rm=</span>T),</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">std_err =</span> <span class="sc">~</span><span class="fu">sd</span>(., <span class="at">na.rm=</span>T)<span class="sc">/</span><span class="fu">sqrt</span>(<span class="fu">n</span>()),</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">cv=</span><span class="sc">~</span><span class="dv">100</span><span class="sc">*</span>(<span class="fu">sd</span>(., <span class="at">na.rm=</span>T)<span class="sc">/</span><span class="fu">mean</span>(., <span class="at">na.rm=</span>T))</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  ), <span class="at">.names =</span> <span class="st">"{.col}-{.fn}"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), <span class="at">names_sep=</span><span class="st">"-"</span>, <span class="at">names_to=</span><span class="fu">c</span>(<span class="st">"variable"</span>, <span class="st">".value"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>$grandes
+# A tibble: 16 × 10
+   variable       min   p25 mediana  media    p75     max std_dev std_err     cv
+   &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+ 1 n_empresas   1     5       7     45.7   15     1.08e+3 1.47e+2 8.73    322.  
+ 2 n_nacimient… 0     0       0      0.604  0     5.1 e+1 3.31e+0 0.196   548.  
+ 3 n_muertes    0     0       0      0.653  0     3.3 e+1 2.86e+0 0.170   439.  
+ 4 alfabetismo  0.725 0.866   0.9    0.895  0.928 9.78e-1 4.61e-2 0.00273   5.15
+ 5 accesos_a_e… 0.058 0.15    0.182  0.215  0.236 7.62e-1 1.22e-1 0.00722  56.6 
+ 6 anios_de_ed… 0.141 0.304   0.349  0.357  0.397 6.78e-1 8.88e-2 0.00526  24.9 
+ 7 promocion_e… 0.168 0.471   0.564  0.568  0.672 9.15e-1 1.47e-1 0.00870  25.9 
+ 8 pobreza      0.283 0.753   0.841  0.812  0.906 9.97e-1 1.27e-1 0.00753  15.6 
+ 9 informalidad 0.148 0.42    0.511  0.498  0.584 7.89e-1 1.26e-1 0.00746  25.3 
+10 desempleo_e… 0.214 0.511   0.579  0.577  0.654 8.86e-1 1.12e-1 0.00665  19.5 
+11 gini         0.288 0.522   0.592  0.589  0.666 8.36e-1 1.10e-1 0.00649  18.6 
+12 acceso_a_in… 0.043 0.334   0.477  0.458  0.595 9.48e-1 2.05e-1 0.0122   44.9 
+13 ingresos_de… 0.083 0.238   0.315  0.329  0.384 7.9 e-1 1.40e-1 0.00831  42.7 
+14 tasa_de_des… 0.149 0.605   0.68   0.675  0.76  9.75e-1 1.28e-1 0.00761  19.0 
+15 porcentaje_… 0.009 0.264   0.379  0.387  0.484 8.32e-1 1.73e-1 0.0102   44.6 
+16 part_act_ec… 0.7   1.6     2.1    5.26   2.9   5.11e+1 1.08e+1 0.642   206.  
+
+$medianas
+# A tibble: 16 × 10
+   variable    min    p25 mediana   media     p75     max std_dev std_err     cv
+   &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+ 1 n_empre… 11     47      67     278.    130     5.33e+3 7.38e+2 4.37e+1 266.  
+ 2 n_nacim…  0      0       1       5.07    3     1.34e+2 1.48e+1 8.74e-1 291.  
+ 3 n_muert…  0      0       1       4.56    3     8.6 e+1 1.26e+1 7.45e-1 275.  
+ 4 alfabet…  0.725  0.866   0.9     0.895   0.928 9.78e-1 4.61e-2 2.73e-3   5.15
+ 5 accesos…  0.058  0.15    0.182   0.215   0.236 7.62e-1 1.22e-1 7.22e-3  56.6 
+ 6 anios_d…  0.141  0.304   0.349   0.357   0.397 6.78e-1 8.88e-2 5.26e-3  24.9 
+ 7 promoci…  0.168  0.471   0.564   0.568   0.672 9.15e-1 1.47e-1 8.70e-3  25.9 
+ 8 pobreza   0.283  0.753   0.841   0.812   0.906 9.97e-1 1.27e-1 7.53e-3  15.6 
+ 9 informa…  0.148  0.42    0.511   0.498   0.584 7.89e-1 1.26e-1 7.46e-3  25.3 
+10 desempl…  0.214  0.511   0.579   0.577   0.654 8.86e-1 1.12e-1 6.65e-3  19.5 
+11 gini      0.288  0.522   0.592   0.589   0.666 8.36e-1 1.10e-1 6.49e-3  18.6 
+12 acceso_…  0.043  0.334   0.477   0.458   0.595 9.48e-1 2.05e-1 1.22e-2  44.9 
+13 ingreso…  0.083  0.238   0.315   0.329   0.384 7.9 e-1 1.40e-1 8.31e-3  42.7 
+14 tasa_de…  0.149  0.605   0.68    0.675   0.76  9.75e-1 1.28e-1 7.61e-3  19.0 
+15 porcent…  0.009  0.264   0.379   0.387   0.484 8.32e-1 1.73e-1 1.02e-2  44.6 
+16 part_ac…  0.7    1.6     2.1     5.26    2.9   5.11e+1 1.08e+1 6.42e-1 206.  
+
+$micro
+# A tibble: 16 × 10
+   variable          min     p25 mediana   media     p75     max std_dev std_err
+   &lt;chr&gt;           &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+ 1 n_empresas    893     2.03e+3 2.84e+3 7.45e+3 4.36e+3 8.43e+4 1.52e+4 9.02e+2
+ 2 n_nacimientos   0     3.73e+2 5.61e+2 1.37e+3 8.54e+2 1.78e+4 2.80e+3 1.66e+2
+ 3 n_muertes      94     3.18e+2 4.75e+2 1.20e+3 7.33e+2 1.41e+4 2.46e+3 1.45e+2
+ 4 alfabetismo     0.725 8.66e-1 9   e-1 8.95e-1 9.28e-1 9.78e-1 4.61e-2 2.73e-3
+ 5 accesos_a_es…   0.058 1.5 e-1 1.82e-1 2.15e-1 2.36e-1 7.62e-1 1.22e-1 7.22e-3
+ 6 anios_de_edu…   0.141 3.04e-1 3.49e-1 3.57e-1 3.97e-1 6.78e-1 8.88e-2 5.26e-3
+ 7 promocion_ed…   0.168 4.71e-1 5.64e-1 5.68e-1 6.72e-1 9.15e-1 1.47e-1 8.70e-3
+ 8 pobreza         0.283 7.53e-1 8.41e-1 8.12e-1 9.06e-1 9.97e-1 1.27e-1 7.53e-3
+ 9 informalidad    0.148 4.2 e-1 5.11e-1 4.98e-1 5.84e-1 7.89e-1 1.26e-1 7.46e-3
+10 desempleo_en…   0.214 5.11e-1 5.79e-1 5.77e-1 6.54e-1 8.86e-1 1.12e-1 6.65e-3
+11 gini            0.288 5.22e-1 5.92e-1 5.89e-1 6.66e-1 8.36e-1 1.10e-1 6.49e-3
+12 acceso_a_int…   0.043 3.34e-1 4.77e-1 4.58e-1 5.95e-1 9.48e-1 2.05e-1 1.22e-2
+13 ingresos_de_…   0.083 2.38e-1 3.15e-1 3.29e-1 3.84e-1 7.9 e-1 1.40e-1 8.31e-3
+14 tasa_de_dese…   0.149 6.05e-1 6.8 e-1 6.75e-1 7.6 e-1 9.75e-1 1.28e-1 7.61e-3
+15 porcentaje_d…   0.009 2.64e-1 3.79e-1 3.87e-1 4.84e-1 8.32e-1 1.73e-1 1.02e-2
+16 part_act_econ   0.7   1.6 e+0 2.1 e+0 5.26e+0 2.9 e+0 5.11e+1 1.08e+1 6.42e-1
+# ℹ 1 more variable: cv &lt;dbl&gt;
+
+$pequeñas
+# A tibble: 16 × 10
+   variable          min     p25 mediana   media     p75     max std_dev std_err
+   &lt;chr&gt;           &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+ 1 n_empresas    115     301     408     1.23e+3 621     1.50e+4 2.75e+3 1.63e+2
+ 2 n_nacimientos   0      10      16     4.99e+1  31     6.87e+2 1.14e+2 6.74e+0
+ 3 n_muertes       0      10      17     4.93e+1  31     6.57e+2 1.04e+2 6.18e+0
+ 4 alfabetismo     0.725   0.866   0.9   8.95e-1   0.928 9.78e-1 4.61e-2 2.73e-3
+ 5 accesos_a_es…   0.058   0.15    0.182 2.15e-1   0.236 7.62e-1 1.22e-1 7.22e-3
+ 6 anios_de_edu…   0.141   0.304   0.349 3.57e-1   0.397 6.78e-1 8.88e-2 5.26e-3
+ 7 promocion_ed…   0.168   0.471   0.564 5.68e-1   0.672 9.15e-1 1.47e-1 8.70e-3
+ 8 pobreza         0.283   0.753   0.841 8.12e-1   0.906 9.97e-1 1.27e-1 7.53e-3
+ 9 informalidad    0.148   0.42    0.511 4.98e-1   0.584 7.89e-1 1.26e-1 7.46e-3
+10 desempleo_en…   0.214   0.511   0.579 5.77e-1   0.654 8.86e-1 1.12e-1 6.65e-3
+11 gini            0.288   0.522   0.592 5.89e-1   0.666 8.36e-1 1.10e-1 6.49e-3
+12 acceso_a_int…   0.043   0.334   0.477 4.58e-1   0.595 9.48e-1 2.05e-1 1.22e-2
+13 ingresos_de_…   0.083   0.238   0.315 3.29e-1   0.384 7.9 e-1 1.40e-1 8.31e-3
+14 tasa_de_dese…   0.149   0.605   0.68  6.75e-1   0.76  9.75e-1 1.28e-1 7.61e-3
+15 porcentaje_d…   0.009   0.264   0.379 3.87e-1   0.484 8.32e-1 1.73e-1 1.02e-2
+16 part_act_econ   0.7     1.6     2.1   5.26e+0   2.9   5.11e+1 1.08e+1 6.42e-1
+# ℹ 1 more variable: cv &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p><em>Visualmente</em>:</p>
+<ul>
+<li>Variables sobre Pymes</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>agg_pymes_df <span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">split</span>(<span class="at">f=</span>.<span class="sc">$</span>tamanio) <span class="sc">|&gt;</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(\(x) x <span class="sc">|&gt;</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(tamanio, <span class="fu">starts_with</span>(<span class="st">"n_"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>           <span class="fu">pivot_longer</span>(<span class="sc">-</span>tamanio, <span class="at">names_to=</span><span class="st">"variable"</span>, <span class="at">values_to=</span><span class="st">"valor"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>           <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>variable, <span class="at">y=</span><span class="fu">log10</span>(valor))) <span class="sc">+</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_violin</span>(<span class="at">fill=</span><span class="st">"#0000FF"</span>) <span class="sc">+</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_boxplot</span>(<span class="at">width=</span><span class="fl">0.31</span>, <span class="at">alpha=</span><span class="dv">1</span>, <span class="at">fill=</span><span class="st">"#FFA500"</span>) <span class="sc">+</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>           <span class="fu">labs</span>(</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">title=</span><span class="st">"Distribuciones de las variables sobre Pymes"</span>,</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">subtitle=</span><span class="st">"En escala log10."</span>,</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>             <span class="at">x=</span><span class="st">"Variable"</span>,</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>             <span class="at">y=</span><span class="st">"Cantidad"</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>           ) <span class="sc">+</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>           <span class="fu">theme_classic</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>$grandes</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/dist-num-vars-pymes-plots-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+$medianas</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/dist-num-vars-pymes-plots-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+$micro</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/dist-num-vars-pymes-plots-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+$pequeñas</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/dist-num-vars-pymes-plots-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Variables sobre socio-educativas</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>socio_educ_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"alfabetismo"</span>, <span class="st">"accesos_a_estudios_terciarios"</span>, <span class="st">"anios_de_educacion_promedio"</span>, <span class="st">"promocion_educacion_media_cb"</span>, <span class="st">"acceso_a_internet"</span>, <span class="st">"porcentaje_de_personal_presupuestado_en_la_intendencia"</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>agg_pymes_df <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">split</span>(<span class="at">f=</span>.<span class="sc">$</span>tamanio) <span class="sc">|&gt;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(\(x) x <span class="sc">|&gt;</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(tamanio, <span class="fu">all_of</span>(socio_educ_vars)) <span class="sc">|&gt;</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>           <span class="fu">pivot_longer</span>(<span class="sc">-</span>tamanio, <span class="at">names_to=</span><span class="st">"variable"</span>, <span class="at">values_to=</span><span class="st">"valor"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>           <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>variable, <span class="at">y=</span>valor)) <span class="sc">+</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_violin</span>(<span class="at">fill=</span><span class="st">"#0000FF"</span>) <span class="sc">+</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_boxplot</span>(<span class="at">width=</span><span class="fl">0.21</span>, <span class="at">alpha=</span><span class="dv">1</span>, <span class="at">fill=</span><span class="st">"#FFA500"</span>) <span class="sc">+</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>           <span class="fu">labs</span>(</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">title=</span><span class="st">"Distribuciones de las variables socio-educativas"</span>,</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>             <span class="at">subtitle=</span><span class="st">"En escala log10."</span>,</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>             <span class="at">x=</span><span class="st">"Variable"</span>,</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>             <span class="at">y=</span><span class="st">"Cantidad"</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>           ) <span class="sc">+</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>           <span class="fu">theme_classic</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>$grandes</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/dist-num-vars-socio-educ-plots-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+$medianas</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/dist-num-vars-socio-educ-plots-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+$micro</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/dist-num-vars-socio-educ-plots-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+$pequeñas</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/dist-num-vars-socio-educ-plots-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Variables económicas:</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>econ_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"pobreza"</span>, <span class="st">"informalidad"</span>, <span class="st">"desempleo_en_jovenes"</span>, <span class="st">"gini"</span>, <span class="st">"ingresos_de_los_hogares"</span>, <span class="st">"tasa_de_desempleo"</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>agg_pymes_df <span class="sc">|&gt;</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">split</span>(<span class="at">f=</span>.<span class="sc">$</span>tamanio) <span class="sc">|&gt;</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(\(x) x <span class="sc">|&gt;</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(tamanio, <span class="fu">all_of</span>(econ_vars)) <span class="sc">|&gt;</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>           <span class="fu">pivot_longer</span>(<span class="sc">-</span>tamanio, <span class="at">names_to=</span><span class="st">"variable"</span>, <span class="at">values_to=</span><span class="st">"valor"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>           <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>variable, <span class="at">y=</span>valor)) <span class="sc">+</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_violin</span>(<span class="at">fill=</span><span class="st">"#0000FF"</span>) <span class="sc">+</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_boxplot</span>(<span class="at">width=</span><span class="fl">0.26</span>, <span class="at">alpha=</span><span class="dv">1</span>, <span class="at">fill=</span><span class="st">"#FFA500"</span>) <span class="sc">+</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>           <span class="fu">labs</span>(</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">title=</span><span class="st">"Distribuciones de las variables económicas"</span>,</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>             <span class="at">subtitle=</span><span class="st">"En escala log10."</span>,</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>             <span class="at">x=</span><span class="st">"Variable"</span>,</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>             <span class="at">y=</span><span class="st">"Cantidad"</span></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>           ) <span class="sc">+</span></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>           <span class="fu">theme_classic</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>$grandes</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/dist-num-vars-econ-plots-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+$medianas</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/dist-num-vars-econ-plots-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+$micro</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/dist-num-vars-econ-plots-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+$pequeñas</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/dist-num-vars-econ-plots-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Se puede observar que que la mayoría de variables numéricas tienden a tener bastantes datos atípicos atípicos lo que genera que las medidas de apartamiento se vean afectadas y haya una diferencia importante entre las medianas y medias de cada variable. A su vez, a excepción de las variables sobre pymes, tienden a tener una forma parecida a una normal con cola alargada (positiva o negativa depende mucho del caso).</p>
+<ul>
+<li><p>¿Cómo se relacionan las distintas variables numéricas con la cantidad de empresas?</p>
+<ul>
+<li>Con las variables socio-educativas</li>
+</ul></li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>agg_pymes_df <span class="sc">|&gt;</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n_empresas =</span> <span class="fu">log</span>(n_empresas)) <span class="sc">|&gt;</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  GGally<span class="sc">::</span><span class="fu">ggpairs</span>(<span class="at">columns=</span><span class="fu">c</span>(<span class="st">"n_empresas"</span>, socio_educ_vars), <span class="fu">aes</span>(<span class="at">color=</span>tamanio, <span class="at">alpha=</span>.<span class="dv">5</span>), <span class="at">progress =</span> F) <span class="sc">|&gt;</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>() <span class="sc">|&gt;</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">suppressWarnings</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/interaccion-n-empresas-vars-educ-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Con las variables economicas:</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>agg_pymes_df <span class="sc">|&gt;</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  GGally<span class="sc">::</span><span class="fu">ggpairs</span>(<span class="at">columns=</span><span class="fu">c</span>(<span class="st">"n_empresas"</span>, econ_vars), <span class="fu">aes</span>(<span class="at">color=</span>tamanio, <span class="at">alpha=</span>.<span class="dv">5</span>), <span class="at">progress =</span> F) <span class="sc">|&gt;</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>() <span class="sc">|&gt;</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">suppressWarnings</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/interaccion-n-empresas-econ-vars-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Se puede observar claramente que las variables socio-educativas y económicas son a nivel departamento y que el tamaño de empresa cambia la dispersión de la cantidad de empresas contra las otras variables.</p>
+<ul>
+<li>¿Cómo evolucionan los variables de pymes a lo largo de los años?</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>pymes_df <span class="sc">|&gt;</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"n_"</span>), <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="fu">na_if</span>(.x, <span class="st">"SIN DATOS"</span>)))) <span class="sc">|&gt;</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="sc">~</span> <span class="fu">round</span>(.x, <span class="dv">3</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>sector, <span class="sc">-</span>departamento, <span class="sc">-</span>tamanio) <span class="sc">|&gt;</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(anio) <span class="sc">|&gt;</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"n_"</span>), <span class="sc">~</span> <span class="fu">sum</span>(.x, <span class="at">na.rm=</span>T))) <span class="sc">|&gt;</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">anio =</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(anio))) <span class="sc">|&gt;</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>anio, <span class="at">names_to=</span><span class="st">"variable"</span>, <span class="at">values_to=</span><span class="st">"valor"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>anio, <span class="at">y=</span>valor, <span class="at">color=</span>variable)) <span class="sc">+</span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">title=</span><span class="st">"Evolución de la cantidad de empresas, muertes y nacimientos."</span>,</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle=</span><span class="st">"A nivel nacional y por año."</span>,</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="st">"Año"</span>,</span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="st">"Cantidad"</span></span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>¿Y por tamaño de la empresa?</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>pymes_df <span class="sc">|&gt;</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"n_"</span>), <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="fu">na_if</span>(.x, <span class="st">"SIN DATOS"</span>)))) <span class="sc">|&gt;</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="sc">~</span> <span class="fu">round</span>(.x, <span class="dv">3</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>sector, <span class="sc">-</span>departamento) <span class="sc">|&gt;</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(anio, tamanio) <span class="sc">|&gt;</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"n_"</span>), <span class="sc">~</span> <span class="fu">sum</span>(.x, <span class="at">na.rm=</span>T))) <span class="sc">|&gt;</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">anio =</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(anio))) <span class="sc">|&gt;</span></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">c</span>(<span class="sc">-</span>anio, <span class="sc">-</span>tamanio), <span class="at">names_to=</span><span class="st">"variable"</span>, <span class="at">values_to=</span><span class="st">"valor"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>anio, <span class="at">y=</span>valor, <span class="at">color=</span>variable)) <span class="sc">+</span></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> tamanio, <span class="at">scales=</span><span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">title=</span><span class="st">"Evolución de la cantidad de empresas, muertes y nacimientos."</span>,</span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle=</span><span class="st">"A nivel nacional, por año y sector."</span>,</span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="st">"Año"</span>,</span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="st">"Cantidad"</span></span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Se tiene que, en general, las muertes y nacimientos se mantienen con poca variación (habría que comprobar que no haya una variable oculta) y que éxisten outliers para las empresas de mayor tamaño mientras que las micro siguen una tendencia creciente pero no así las pequeñas que son más variables en el tiempo.</p>
+</section>
+<section id="preprocesamiento-de-datos" class="level2">
+<h2 class="anchored" data-anchor-id="preprocesamiento-de-datos">Preprocesamiento de datos</h2>
+<p>Como se pudo observar durante la fase del EDA, nuestro dataset crudo tiene problema de consistencia e incompletitud en los datos que, en ésta sección, abordaremos para transformarlo hacia un dataset que nos permita realizar una predicción lo más confiable posible.</p>
+<p>Débido a esto es que realizaremos las siguientes transformaciones antes de modelar:</p>
+<ul>
+<li>Utilizaremos año, departamento y tamaño como apertura.</li>
+<li>Transformaremos todos los datos faltantes a NA.</li>
+<li>Redondearemos a 3 decimales las variables numéricas.</li>
+<li>Utilizaremos la serie sin datos faltantes (2008-2018)</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>series_df <span class="ot">&lt;-</span> pymes_df <span class="sc">|&gt;</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"n_"</span>), <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="fu">na_if</span>(.x, <span class="st">"SIN DATOS"</span>)))) <span class="sc">|&gt;</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="sc">~</span> <span class="fu">round</span>(.x, <span class="dv">3</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(anio, departamento, tamanio) <span class="sc">|&gt;</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"n_"</span>), <span class="sc">~</span> <span class="fu">sum</span>(.x, <span class="at">na.rm =</span> T)), <span class="fu">across</span>(<span class="sc">!</span><span class="fu">starts_with</span>(<span class="st">"n_"</span>) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">matches</span>(<span class="st">"sector"</span>), <span class="sc">~</span> <span class="fu">mean</span>(., <span class="at">na.rm=</span>T))) <span class="sc">|&gt;</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="sc">~</span> <span class="fu">if_else</span>(<span class="fu">is.nan</span>(.), <span class="cn">NA</span>, .))) <span class="sc">|&gt;</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">as.numeric</span>(anio) <span class="sc">&lt;</span> <span class="dv">2019</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="modelado" class="level2">
+<h2 class="anchored" data-anchor-id="modelado">Modelado</h2>
+<p>Es de nuestro interés la creación de un modelo predictivo de la variable <code>n_empresas</code> y, para cumplir con dicho objetivo, utilizaremos el resto de variables como predictores de <code>n_empresas</code> tratando de modelar cómo la situación educacional, social y económica de cada departamento influye en la creación de Pymes.</p>
+<p>Empezaremos estableciendo un punto de partida con un modelo “baseline” que queremos superar con modelos más complejos que sepan inferir las relaciones complejas en éste problema multidimensional.</p>
+<section id="separación-en-datos-de-entrenamiento-y-de-validación" class="level3">
+<h3 class="anchored" data-anchor-id="separación-en-datos-de-entrenamiento-y-de-validación">Separación en datos de entrenamiento y de validación</h3>
+<p>En un problema de predicción, la separación de entrenamiento difiere un poco de lo que se hace para una regresión ya que al querer generar un modelo que predice el futuro nuestra validación reside en que tan bien éste predice en comparación a un evento que realmente ocurrió.</p>
+<p>Una práctica común al momento de hacer ésta separación de datos es la de separar basados en tu horizonte de predicción (cuantos puntos a futuro se quiere predecir). Utilizando ésta referencia es que utilizaremos el 2017 como punto de separación</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>splits <span class="ot">&lt;-</span> series_df <span class="sc">|&gt;</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">anio =</span> <span class="fu">as.Date</span>(<span class="fu">paste0</span>(anio, <span class="st">"-01-01"</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">time_series_split</span>(<span class="at">initial=</span><span class="st">"9 years"</span>, <span class="at">assess =</span> <span class="st">"1 years"</span>)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">training</span>(splits)</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> <span class="fu">testing</span>(splits)</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>splits <span class="sc">|&gt;</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tk_time_series_cv_plan</span>() <span class="sc">|&gt;</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># mutate(set = if_else(as.numeric(anio) &lt;= 2017, "train", "test")) |&gt;</span></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(departamento <span class="sc">==</span> <span class="st">"montevideo"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>anio, <span class="at">y=</span>n_empresas, <span class="at">color=</span>.key)) <span class="sc">+</span></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> tamanio, <span class="at">scales=</span><span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">title=</span><span class="st">"Series de la cantidad de empresas a lo largo de los años"</span>,</span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle=</span><span class="st">"Separadas en sets de entrenamiento y validación"</span>,</span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="st">"Año"</span>,</span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="st">"Cantidad de empresas"</span>,</span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill=</span><span class="st">"Set"</span></span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/data-splitting-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="regresión-lineal" class="level3">
+<h3 class="anchored" data-anchor-id="regresión-lineal">Regresión lineal</h3>
+<p>Para nuestro modelo base, eligiremos una regresión lineal como nuestro modelo base. Éste es un modelo básico al momento de capturar relaciones complejas o no lineales ya que se basa en la estimación de nuestra variable de interés (y) dada la sumatoria del resto de predictores (<span class="math inline">\(x_i\)</span>) por un coeficiente (<span class="math inline">\(b_i\)</span>) y un error (<span class="math display">\[\varepsilon_i\]</span>), tal que:</p>
+<p><span class="math display">\[
+y_i = \beta_0 + \beta_1 x_i + \varepsilon_i
+\]</span></p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>lm_recipe <span class="ot">&lt;-</span> <span class="fu">recipe</span>(n_empresas <span class="sc">~</span> ., <span class="at">data=</span>train) <span class="sc">|&gt;</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(n_muertes, n_nacimientos) <span class="sc">|&gt;</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_corr</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_ordinalscore</span>(tamanio) <span class="sc">|&gt;</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_dummy</span>(departamento) <span class="sc">|&gt;</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_mutate</span>(<span class="at">anio =</span> <span class="fu">year</span>(anio)) <span class="sc">|&gt;</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_zv</span>(<span class="fu">all_predictors</span>())</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>lm_model <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>(<span class="at">penalty =</span> <span class="fl">0.01</span>, <span class="at">mixture =</span> <span class="fl">0.5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"glmnet"</span>)</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>wf_linear <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(lm_model) <span class="sc">|&gt;</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(lm_recipe) <span class="sc">|&gt;</span></span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="árboles" class="level3">
+<h3 class="anchored" data-anchor-id="árboles">Árboles</h3>
+<p>Entrenaremos dos tipos distintos de árboles para intentar capturar eficientemente las variables de mayor peso al momento de estimar la cantidad de empresas.</p>
+<p>Para ello, primero haremos una búsqueda de hiperparámetros y luego seleccionaremos el mejor modelo en base al <code>RMSE</code> como métrica de minimización elegida. Ésta métrica es elegida en base a su poder de interpretabilidad al estar en las mismas unidades que la variable a predecir.</p>
+<section id="bosque-aleatorio" class="level4">
+<h4 class="anchored" data-anchor-id="bosque-aleatorio">Bosque aleatorio</h4>
+<p>Random Forest es una técnica de ensamble basada en árboles de decisión y en el principio de bagging. Este método entrena múltiples árboles de decisión en subconjuntos aleatorios del conjunto de datos, y combina sus predicciones mediante promedio, lo cual reduce significativamente la varianza del modelo individual.</p>
+<p>Random Forest es particularmente adecuado en este contexto porque:</p>
+<ul>
+<li><p>Es robusto frente al sobreajuste, especialmente cuando hay una alta cardinalidad en variables categóricas como el departamento.</p></li>
+<li><p>Captura bien interacciones y no linealidades.</p></li>
+<li><p>Su estructura permite interpretar la importancia relativa de las variables predictoras, lo cual nos ayuda a entender la estimación.</p></li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>rf_recipe <span class="ot">&lt;-</span> <span class="fu">recipe</span>(n_empresas <span class="sc">~</span> ., <span class="at">data=</span>train) <span class="sc">|&gt;</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_ordinalscore</span>(tamanio) <span class="sc">|&gt;</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_dummy</span>(departamento) <span class="sc">|&gt;</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_mutate</span>(<span class="at">anio=</span><span class="fu">year</span>(anio))</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>rf_tbl <span class="ot">&lt;-</span> <span class="fu">grid_regular</span>(</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mtry</span>(<span class="at">range=</span><span class="fu">c</span>(<span class="dv">2</span>L, <span class="dv">10</span>L)),</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">min_n</span>(),</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">trees</span>()</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_model_grid</span>(</span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">f_model_spec =</span> rand_forest,</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">engine_name  =</span> <span class="st">"ranger"</span>,</span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">mode         =</span> <span class="st">"regression"</span></span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>wfset_rand_forest <span class="ot">&lt;-</span> <span class="fu">workflow_set</span>(</span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">preproc =</span> <span class="fu">list</span>(</span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>    rf_recipe</span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">models =</span> rf_tbl<span class="sc">$</span>.models, </span>
+<span id="cb39-22"><a href="#cb39-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">cross =</span> T</span>
+<span id="cb39-23"><a href="#cb39-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb39-24"><a href="#cb39-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-25"><a href="#cb39-25" aria-hidden="true" tabindex="-1"></a>rf_model <span class="ot">&lt;-</span> <span class="fu">rand_forest</span>() <span class="sc">|&gt;</span></span>
+<span id="cb39-26"><a href="#cb39-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"ranger"</span>, <span class="at">importance=</span><span class="st">"impurity"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb39-27"><a href="#cb39-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"regression"</span>)</span>
+<span id="cb39-28"><a href="#cb39-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-29"><a href="#cb39-29" aria-hidden="true" tabindex="-1"></a>wf_rand_forest <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span></span>
+<span id="cb39-30"><a href="#cb39-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(rf_model) <span class="sc">|&gt;</span></span>
+<span id="cb39-31"><a href="#cb39-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(rf_recipe) <span class="sc">|&gt;</span></span>
+<span id="cb39-32"><a href="#cb39-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="xgboost" class="level4">
+<h4 class="anchored" data-anchor-id="xgboost">XGBoost</h4>
+<p>XGBoost (Extreme Gradient Boosting), una técnica de aprendizaje supervisado basada en árboles de decisión y en el principio de boosting. Este algoritmo construye múltiples árboles de forma secuencial, donde cada árbol intenta corregir los errores del anterior. A diferencia de la regresión lineal, XGBoost permite capturar relaciones no lineales y complejas interacciones entre las variables predictoras.</p>
+<p>Es un modelo que:</p>
+<ul>
+<li><p>Robusto al overfitting</p></li>
+<li><p>Capta relaciones no lineales</p></li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>xg_recipe <span class="ot">&lt;-</span> <span class="fu">recipe</span>(n_empresas <span class="sc">~</span> ., <span class="at">data=</span>train) <span class="sc">|&gt;</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_ordinalscore</span>(tamanio) <span class="sc">|&gt;</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_dummy</span>(departamento) <span class="sc">|&gt;</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_mutate</span>(<span class="at">anio=</span><span class="fu">year</span>(anio))</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>xg_tbl <span class="ot">&lt;-</span> <span class="fu">grid_regular</span>(</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">learn_rate</span>(),</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tree_depth</span>(),</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">trees</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">100</span>L, <span class="dv">1000</span>L)),</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">levels=</span><span class="dv">3</span></span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_model_grid</span>(</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">f_model_spec =</span> boost_tree,</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">engine_name  =</span> <span class="st">"xgboost"</span>,</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">mode         =</span> <span class="st">"regression"</span></span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>wfset_xgboost <span class="ot">&lt;-</span> <span class="fu">workflow_set</span>(</span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">preproc =</span> <span class="fu">list</span>(</span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>    xg_recipe</span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">models =</span> xg_tbl<span class="sc">$</span>.models, </span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">cross =</span> T</span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="entrenamiento" class="level3">
+<h3 class="anchored" data-anchor-id="entrenamiento">Entrenamiento</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>tree_models_tbl <span class="ot">&lt;-</span> wfset_rand_forest <span class="sc">|&gt;</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">modeltime_fit_workflowset</span>(</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data    =</span> train,</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">control =</span> <span class="fu">control_fit_workflowset</span>(</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">verbose   =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">allow_par =</span> <span class="cn">TRUE</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>    wfset_xgboost <span class="sc">|&gt;</span></span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">modeltime_fit_workflowset</span>(</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">data    =</span> train,</span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">control =</span> <span class="fu">control_fit_workflowset</span>(</span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>          <span class="at">verbose   =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>          <span class="at">allow_par =</span> <span class="cn">TRUE</span></span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a>tree_preds_tbl <span class="ot">&lt;-</span> tree_models_tbl <span class="sc">|&gt;</span></span>
+<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">modeltime_calibrate</span>(<span class="at">new_data =</span> test)</span>
+<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a>tree_preds_tbl <span class="sc">|&gt;</span> <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># Modeltime Table
+# A tibble: 6 × 5
+  .model_id .model     .model_desc          .type .calibration_data
+      &lt;int&gt; &lt;list&gt;     &lt;chr&gt;                &lt;chr&gt; &lt;list&gt;           
+1         1 &lt;workflow&gt; RECIPE_RAND_FOREST_1 Test  &lt;tibble [76 × 4]&gt;
+2         2 &lt;workflow&gt; RECIPE_RAND_FOREST_2 Test  &lt;tibble [76 × 4]&gt;
+3         3 &lt;workflow&gt; RECIPE_RAND_FOREST_3 Test  &lt;tibble [76 × 4]&gt;
+4         4 &lt;workflow&gt; RECIPE_RAND_FOREST_4 Test  &lt;tibble [76 × 4]&gt;
+5         5 &lt;workflow&gt; RECIPE_RAND_FOREST_5 Test  &lt;tibble [76 × 4]&gt;
+6         6 &lt;workflow&gt; RECIPE_RAND_FOREST_6 Test  &lt;tibble [76 × 4]&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="evaluación" class="level3">
+<h3 class="anchored" data-anchor-id="evaluación">Evaluación</h3>
+<p>A partir de los modelos entrenados calcularemos las métricas de error poniendo foco en el <code>RMSE</code>|</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>tree_eval_tbl <span class="ot">&lt;-</span> tree_preds_tbl <span class="sc">|&gt;</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">modeltime_accuracy</span>()</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>tree_eval_tbl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 54 × 9
+   .model_id .model_desc           .type   mae   mape   mase smape  rmse   rsq
+       &lt;int&gt; &lt;chr&gt;                 &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1         1 RECIPE_RAND_FOREST_1  Test  2089. 1140.  0.517  123.  7207. 0.367
+ 2         2 RECIPE_RAND_FOREST_2  Test   458.   50.4 0.113   43.9 1097. 0.992
+ 3         3 RECIPE_RAND_FOREST_3  Test   376.   75.0 0.0930  35.5 1163. 0.983
+ 4         4 RECIPE_RAND_FOREST_4  Test  1857.   91.2 0.459   65.9 7400. 0.354
+ 5         5 RECIPE_RAND_FOREST_5  Test   412.  118.  0.102   47.6 1261. 0.996
+ 6         6 RECIPE_RAND_FOREST_6  Test   463.   37.9 0.115   38.5 1243. 0.987
+ 7         7 RECIPE_RAND_FOREST_7  Test  1080.  109.  0.267   71.8 2355. 0.940
+ 8         8 RECIPE_RAND_FOREST_8  Test  2019.  217.  0.499   62.5 7010. 0.372
+ 9         9 RECIPE_RAND_FOREST_9  Test  1364.  579.  0.337   48.6 3371. 0.860
+10        10 RECIPE_RAND_FOREST_10 Test  1491.  968.  0.369  101.  4538. 0.846
+# ℹ 44 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="selección-del-mejor-modelo" class="level3">
+<h3 class="anchored" data-anchor-id="selección-del-mejor-modelo">Selección del mejor modelo</h3>
+<p>De XGBoost vimos que el mejor modelo es:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>xg_tbl <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="fu">row_number</span>() <span class="sc">==</span> <span class="dv">24</span>) <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  learn_rate tree_depth trees
+       &lt;dbl&gt;      &lt;int&gt; &lt;int&gt;
+1        0.1          8  1000</code></pre>
+</div>
+</div>
+<p>Y para el random forest:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>rf_tbl <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="fu">row_number</span>() <span class="sc">==</span> <span class="dv">21</span>) <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+   mtry min_n trees
+  &lt;int&gt; &lt;int&gt; &lt;int&gt;
+1    10     2  2000</code></pre>
+</div>
+</div>
+<p>Entonces reentrenemos un único modelo, calculando predicciones e importancia de cada feature al momento de decidir.</p>
+</section>
+<section id="predicciones" class="level3">
+<h3 class="anchored" data-anchor-id="predicciones">Predicciones</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>xg_model <span class="ot">&lt;-</span> <span class="fu">boost_tree</span>(<span class="at">learn_rate =</span> <span class="fl">0.1</span>, <span class="at">tree_depth =</span> <span class="dv">8</span>, <span class="at">trees =</span> <span class="dv">1000</span>) <span class="sc">|&gt;</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"xgboost"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"regression"</span>)</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>wf_xgboost <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(xg_recipe) <span class="sc">|&gt;</span></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(xg_model) <span class="sc">|&gt;</span></span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(train)</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>rf_model <span class="ot">&lt;-</span> <span class="fu">rand_forest</span>(<span class="at">mtry =</span> <span class="dv">10</span>, <span class="at">min_n =</span> <span class="dv">2</span>, <span class="at">trees =</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"ranger"</span>, <span class="at">importance=</span><span class="st">"impurity"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"regression"</span>)</span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>wf_rand_forest <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span></span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(rf_recipe) <span class="sc">|&gt;</span></span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(rf_model) <span class="sc">|&gt;</span></span>
+<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(train)</span>
+<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a>models_tbl <span class="ot">&lt;-</span> <span class="fu">modeltime_table</span>(</span>
+<span id="cb49-20"><a href="#cb49-20" aria-hidden="true" tabindex="-1"></a>  wf_linear,</span>
+<span id="cb49-21"><a href="#cb49-21" aria-hidden="true" tabindex="-1"></a>  wf_rand_forest,</span>
+<span id="cb49-22"><a href="#cb49-22" aria-hidden="true" tabindex="-1"></a>  wf_xgboost</span>
+<span id="cb49-23"><a href="#cb49-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb49-24"><a href="#cb49-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-25"><a href="#cb49-25" aria-hidden="true" tabindex="-1"></a>preds_tbl <span class="ot">&lt;-</span> models_tbl <span class="sc">|&gt;</span></span>
+<span id="cb49-26"><a href="#cb49-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">modeltime_calibrate</span>(<span class="at">new_data =</span> test)</span>
+<span id="cb49-27"><a href="#cb49-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-28"><a href="#cb49-28" aria-hidden="true" tabindex="-1"></a>preds_tbl<span class="sc">$</span>.calibration_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+# A tibble: 76 × 4
+   anio       .actual .prediction .residuals
+   &lt;date&gt;       &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;
+ 1 2018-01-01       3     -264.        267. 
+ 2 2018-01-01      68       -4.80       72.8
+ 3 2018-01-01    2270     3254.       -984. 
+ 4 2018-01-01     303      575.       -272. 
+ 5 2018-01-01     123       11.1       112. 
+ 6 2018-01-01     751      327.        424. 
+ 7 2018-01-01   19238    20384.      -1146. 
+ 8 2018-01-01    2625     1320.       1305. 
+ 9 2018-01-01       9     -266.        275. 
+10 2018-01-01      87      -17.8       105. 
+# ℹ 66 more rows
+
+[[2]]
+# A tibble: 76 × 4
+   anio       .actual .prediction .residuals
+   &lt;date&gt;       &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;
+ 1 2018-01-01       3        8.45      -5.45
+ 2 2018-01-01      68       57.7       10.3 
+ 3 2018-01-01    2270     2770.      -500.  
+ 4 2018-01-01     303      330.       -26.9 
+ 5 2018-01-01     123      686.      -563.  
+ 6 2018-01-01     751     1066.      -315.  
+ 7 2018-01-01   19238    16720.      2518.  
+ 8 2018-01-01    2625     3059.      -434.  
+ 9 2018-01-01       9       13.4       -4.41
+10 2018-01-01      87       72.6       14.4 
+# ℹ 66 more rows
+
+[[3]]
+# A tibble: 76 × 4
+   anio       .actual .prediction .residuals
+   &lt;date&gt;       &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;
+ 1 2018-01-01       3        3.72    -0.720 
+ 2 2018-01-01      68       44.7     23.3   
+ 3 2018-01-01    2270     2545.    -275.    
+ 4 2018-01-01     303      299.       4.08  
+ 5 2018-01-01     123       51.5     71.5   
+ 6 2018-01-01     751      575.     176.    
+ 7 2018-01-01   19238    18600.     638.    
+ 8 2018-01-01    2625     2575.      50.2   
+ 9 2018-01-01       9        8.93     0.0738
+10 2018-01-01      87       80.0      7.03  
+# ℹ 66 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="re-evaluación" class="level3">
+<h3 class="anchored" data-anchor-id="re-evaluación">Re-evaluación</h3>
+<p>Reevaluamos junto a las métricas de la regresión lineal.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>eval_tbl <span class="ot">&lt;-</span> preds_tbl <span class="sc">|&gt;</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">modeltime_accuracy</span>()</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>eval_tbl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 9
+  .model_id .model_desc .type   mae  mape   mase smape  rmse   rsq
+      &lt;int&gt; &lt;chr&gt;       &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1         1 GLMNET      Test   394. 514.  0.0975  87.7  789. 0.992
+2         2 RANGER      Test   297.  35.4 0.0736  25.6 1237. 0.998
+3         3 XGBOOST     Test   163.  21.2 0.0402  25.1  420. 0.999</code></pre>
+</div>
+</div>
+</section>
+<section id="importancia-de-las-variables-en-los-árboles" class="level3">
+<h3 class="anchored" data-anchor-id="importancia-de-las-variables-en-los-árboles">Importancia de las variables en los árboles</h3>
+<p>Es interesante el poder explicar como se llegá a una conclusión (una predicción en este caso), para eso visualizaremos que importancia, a través del “impurity” (en el caso del random forest), se le dio a cada variable.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>wf_rand_forest <span class="sc">|&gt;</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_parsnip</span>() <span class="sc">|&gt;</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  vip<span class="sc">::</span><span class="fu">vip</span>(<span class="at">num_features=</span><span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>wf_xgboost <span class="sc">|&gt;</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_parsnip</span>() <span class="sc">|&gt;</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  vip<span class="sc">::</span><span class="fu">vip</span>(<span class="at">num_features=</span><span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pymes_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="referencias" class="level1">
+<h1>Referencias</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-ande2024" class="csl-entry" role="listitem">
+Agencia Nacional de Desarrollo (ANDE). 2024. <span>“Indicadores Demográficos – Monitor MIPYMES.”</span> <a href="https://monitor.ande.org.uy/indicadoresemp.aspx">https://monitor.ande.org.uy/indicadoresemp.aspx</a>.
+</div>
+<div id="ref-opp2018" class="csl-entry" role="listitem">
+Observatorio Territorio Uruguay – Oficina de Planeamiento y Presupuesto (OPP). 2018. <span>“Actividad Económica Departamental: Participación Porcentual En La Actividad Económica Nacional (2008–2018).”</span> Conjunto de datos. Oficina de Planeamiento y Presupuesto (Uruguay). <a href="https://www.opp.gub.uy/">https://www.opp.gub.uy/</a>.
+</div>
+<div id="ref-idereuy2024" class="csl-entry" role="listitem">
+Rodríguez Miranda, Andrés, Claudio Vial Cossani, Ignacio Centurión, and Mariana Pérez. 2024. <span>“Índice de Desarrollo Regional Uruguay 2006–2022. IDERE-UY. Informe 2024.”</span> Informe técnico. Montevideo: Facultad de Ciencias Económicas y de Administración, Universidad de la República. <a href="https://desarrolloterritorial.idere.ei.udelar.edu.uy/">https://desarrolloterritorial.idere.ei.udelar.edu.uy/</a>.
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
