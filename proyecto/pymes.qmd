@@ -1,0 +1,713 @@
+---
+title: "Proyecto final Ciencia de Datos con R:\nMicro, pequeñas y medianas empresas en el Uruguay."
+title-block-banner: true
+author: "Gonzalo Ruiz <gonzaaruizz22@gmail.com>"
+format:
+  pdf:
+    toc: true
+    toc-title: "Indice"
+    echo: false
+  html:
+    toc: true
+    toc-title: "Indice"
+    code-fold: true
+execute: 
+  warning: false
+bibliography: references.bib
+bibliographystyle: apa
+---
+
+## Introducción
+
+## Datos, datos y más datos
+
+Para el siguiente análisis utilizaremos datos de múltiple fuentes que nos ayudarán a explicar el fenómeno de las empresas de distinto tamaño en Uruguay a través de variables indicadoras de la situación económica del país y de variables relacionadas a las empresas mencionadas.
+
+Las fuentes utilizadas fueron extraídas de:
+
+-   @ande2024
+-   Informe IDERE-UY (@idereuy2024)
+-   Observatorio Territorio Uruguay -- OPP (@opp2018)
+
+### Descripción de variables
+
+| Variable | Descripción |
+|-------------------------------|-----------------------------------------|
+| anio | Año de referencia de la observación. |
+| departamento | Nombre del departamento (en Uruguay) donde se registra la información. |
+| tamanio | Clasificación del tamaño de las empresas (ej. micro, pequeña, mediana, etc.). |
+| sector | Sector económico al que pertenece la empresa (ej. industria, servicios, etc.). |
+| n_empresas | Número total de empresas registradas. |
+| n_nacimientos | Número total de nuevas empresas creadas. |
+| n_muertes | Número de empresas que dejaron de operar. |
+| alfabetismo | Tasa de alfabetismo. |
+| accesos_a_estudios_terciarios | Población entre 25 y 65 años que accede a estudios terciarios(%). |
+| anios_de_educacion_promedio | Promedio de años de educación de la población de 25 años y más. |
+| promocion_educacion_media_cb | Porcentaje de promoción en ciclo básico de educación media pública. |
+| pobreza | Personas en hogares en situación de pobreza (%). |
+| informalidad | Informalidad de los ocupados (%). |
+| desempleo_en_jovenes | Cociente entre tasa de desempleo de jóvenes (14-29 años) y tasa general. |
+| gini | Coeficiente de Gini (ingreso de los hogares). |
+| acceso_a_internet | Hogares con conexión a internet (%). |
+| ingresos_de_los_hogares | Relación entre el ingreso per cápita de los hogares del departamento y el valor para el país. |
+| tasa_de_desempleo | Tasa de desempleo. |
+| porcentaje_de_personal_presupuestado_en_la_intendencia | Porcentaje de personal presupuestado en el total de funcionarios de los gobiernos departamentales. |
+| part_act_econ | Participación porcentual del departamento en la actividad económica país. |
+
+## Ánalisis exploratorio
+
+Al trabajar con datos es natural hacerse preguntas sobre la composición y características de los mismos, es en éste siguiente análisis que intentaremos dar respuestas de manera visual y con medidas de resúmenes numéricas para familiarizarnos con nuestra base de datos.
+
+```{r}
+#| label: librerias
+#| include: false
+library(tidyverse)
+library(tidymodels)
+library(ggplot2)
+library(modeltime)
+library(timetk)
+options(repr.plot.width=30, repr.plot.height=18)
+set.seed(1922)
+```
+
+```{r}
+#| label: datasets
+# Participacion en la actividad economica
+act_econ_df <- read_delim(
+  here::here("data/proyecto/indicadores/participacion-departamental-actividad-economica.csv"),
+  show_col_types = FALSE
+) |>
+  pivot_longer(cols = where(is.numeric), names_to="anio", values_to="part_act_econ") |>
+  mutate(anio = as.character(anio), departamento = tolower(trimws(chartr("áéíóú", "aeiou", departamento))))
+
+# Indicadores de desarrollo socio-economico
+idere_df <- readxl::read_xlsx(
+  here::here("data/proyecto/indicadores/idere.xlsx"),
+  sheet = 1,
+) |>
+  rename_with(~ tolower(gsub(" ", "_", .x, fixed=T))) |>
+  rename(
+    gini="gini_(distribución_del_ingreso)",
+    ingresos_de_los_hogares="ingresos_de_los_hogares_(en_proporción_del_promedio_país)"
+  ) |>
+  rename_with(~ chartr("áéíóú", "aeiou", .x)) |>
+  rename_with(~ gsub("ñ", "ni", .x, fixed=T)) |>
+  filter(!departamento %in% c("Promedio", "Máximo", "Mínimo")) |>
+  select(
+    departamento,
+    anio,
+    alfabetismo,
+    accesos_a_estudios_terciarios,
+    anios_de_educacion_promedio,
+    promocion_educacion_media_cb,
+    pobreza,
+    informalidad,
+    desempleo_en_jovenes,
+    gini,
+    acceso_a_internet,
+    ingresos_de_los_hogares,
+    tasa_de_desempleo,
+    porcentaje_de_personal_presupuestado_en_la_intendencia
+  ) |>
+  mutate(anio = as.character(anio), departamento = tolower(trimws(chartr("áéíóú", "aeiou", departamento))))
+
+pymes_df <- list.files("data/proyecto/pymes/n-empresas", full.names = T) |>
+  lapply(readxl::read_xlsx) |>
+  bind_rows() |>
+  rename_with(~ tolower(gsub("ñ", "ni", .x, fixed=T))) %>%
+  rename(n_empresas="valor") |>
+  select(-indicador) |>
+  left_join(
+    list.files("data/proyecto/pymes/n-nacimientos", full.names = T) |>
+    lapply(readxl::read_xlsx) |>
+    bind_rows() |>
+    rename_with(~ tolower(gsub("ñ", "ni", .x, fixed=T))) |>
+    rename(n_nacimientos="valor") |>
+    select(-indicador),
+    by=c("anio", "departamento", "tamanio", "sector")
+  ) |>
+  left_join(
+    list.files("data/proyecto/pymes/n-muertes", full.names = T) |>
+    lapply(readxl::read_xlsx) |>
+    bind_rows() |>
+    rename_with(~ tolower(gsub("ñ", "ni", .x, fixed=T))) |>
+    rename(n_muertes="valor") |>
+    select(-indicador),
+    by=c("anio", "departamento", "tamanio", "sector")
+  ) |>
+  mutate(anio = as.character(anio)) |>
+  mutate(across(where(is.character), ~ tolower(trimws(chartr("áéíóú", "aeiou", .x))))) |>
+  left_join(
+    idere_df,
+    by=c("departamento", "anio")
+  ) |>
+  left_join(
+    act_econ_df,
+    by=c("departamento", "anio")
+  ) |>
+  mutate(departamento = as.factor(departamento), sector = as.factor(sector), tamanio = factor(tamanio, levels=tamanio |> unique() |> sort(), ordered=T))
+```
+
+-   ¿Cuál es la dimensión de nuestro Dataset?
+
+Tenemos un Dataset con `{r} nrow(pymes_df)` observaciones y `{r} length(colnames(pymes_df))` variables.
+
+-   ¿Existen duplicados?
+
+Tenemos `{r} nrow(pymes_df)` observaciones y si descartamos los duplicados nos queda en: `{r} pymes_df |> distinct() |> nrow()`.
+
+-   ¿Cómo está armado nuestro DataFrame? ¿qué variables contiene? Y ejemplos de observaciones.
+
+    -   Esquema
+
+```{r}
+#| label: glimpse
+pymes_df |> glimpse()
+```
+
+```         
+-   Primeras 6 filas
+```
+
+```{r}
+#| label: head
+pymes_df |> head()
+```
+
+-   Últimas 6 filas
+
+```{r}
+#| label: tail
+pymes_df |> tail()
+```
+
+-   6 filas aleatorias
+
+```{r}
+#label: rand6
+pymes_df |> sample_n(6)
+```
+
+Es fácil de observar que existen variables numéricas que contienen observaciones de tipo `character` representando a valores faltantes y, al mismo tiempo, también observamos la existencia de valores `NA`.
+
+Entonces, nos preguntamos:
+
+-   ¿Cuál es el porcentaje de datos faltantes existe por cadá variable?
+
+::: callout-note
+Como se vio en las observaciones seleccionadas, existen datos faltantes representados con texto por lo que necesitaremos pre-procesar esas columnas y normalizar la representación de un dato faltante como `NA`. Luego formalizaremos este pre-procesamiento como parte del flujo pre-modelado.
+:::
+
+```{r}
+#| label: pct-faltantes
+pymes_df |>
+  mutate(across(starts_with("n_"), ~ as.numeric(na_if(.x, "SIN DATOS")))) |>
+  mutate(across(where(is.numeric), ~ round(.x, 3))) |>
+  summarise_all(~ sum(is.na(.x))) |>
+  pivot_longer(cols=everything(), names_to="variable", values_to="cant_faltantes") |>
+  mutate(pct_faltantes = cant_faltantes * 100 / nrow(pymes_df)) |>
+  mutate(variable = fct_reorder(variable, cant_faltantes)) |>
+  ggplot(aes(x=variable, y=pct_faltantes)) +
+  geom_col(fill="skyblue") +
+  labs(title="Porcentajes de datos faltantes por variable.", x="Variable", y="Porcentaje de faltantes") +
+  coord_flip()
+```
+
+-   ¿Y si subimos un nivel de agregación ignorando el sector?
+
+```{r}
+#| label: pct-faltantes-sin-sector
+agg_pymes_df <- pymes_df |>
+  mutate(across(starts_with("n_"), ~ as.numeric(na_if(.x, "SIN DATOS")))) |>
+  mutate(across(where(is.numeric), ~ round(.x, 3))) |>
+  group_by(anio, departamento, tamanio) |>
+  summarise(across(starts_with("n_"), ~ sum(.x, na.rm = T)), across(!starts_with("n_") & !matches("sector"), ~ mean(., na.rm=T))) |>
+  mutate(across(where(is.numeric), ~ if_else(is.nan(.), NA, .)))
+
+agg_pymes_df |>
+  ungroup() |>
+  filter(tamanio != "grandes") |>
+  select(!c(anio:tamanio)) |>
+  pivot_longer(everything(), names_to="variable", values_to="cant_faltantes") |>
+  mutate(cant_faltantes = if_else(is.na(cant_faltantes), 1, 0)) |>
+  group_by(variable) |>
+  summarise(cant_faltantes = sum(cant_faltantes)) |>
+  mutate(pct_faltantes = cant_faltantes * 100 / nrow(agg_pymes_df)) |>
+  mutate(variable = fct_reorder(variable, cant_faltantes)) |>
+  ggplot(aes(x=variable, y=pct_faltantes)) +
+  geom_col(fill="skyblue") +
+  labs(
+    title="Porcentajes de datos faltantes por variable sobre el total de observaciones.",
+    subtitle="Aperturado por año, departamento y tamaño.",
+    x="Variable",
+    y="Porcentaje de faltantes"
+  ) +
+  coord_flip()
+```
+
+Podemos concluir que al estar tan desagregado nuestro Dataset los datos faltantes pasan a ser un problema a tener en cuenta. A partir de este punto realizaremos nuestro análisis con el dataset aperturado por año, departamento y tamaño.
+
+- ¿Estos NA pertenecen a algún período de tiempo particular?
+```{r}
+agg_pymes_df |>
+  ungroup() |>
+  filter(is.na(part_act_econ)) |>
+  select(anio) |>
+  distinct()
+```
+La serie de la participación en la actividad económica está incompleta para el período 2019-2022.
+
+-   ¿Cómo se comportan las distintas variables numéricas por tamaño de la empresa? ¿Cómo es su distribución? ¿Y el apartamiento?
+
+```{r}
+#| label: dist-num-vars
+agg_pymes_df |>
+  ungroup() %>%
+  split(f=.$tamanio) |>
+  lapply(\(x) x |> summarise(across(where(is.numeric), .fns=list(
+    min=~min(., na.rm=T),
+    p25 = ~quantile(., 0.25, na.rm=T),
+    mediana = ~median(., na.rm=T),
+    media = ~mean(., na.rm=T),
+    p75 = ~quantile(., 0.75, na.rm=T),
+    max=~max(., na.rm=T),
+    std_dev = ~sd(., na.rm=T),
+    std_err = ~sd(., na.rm=T)/sqrt(n()),
+    cv=~100*(sd(., na.rm=T)/mean(., na.rm=T))
+  ), .names = "{.col}-{.fn}")) |>
+    pivot_longer(everything(), names_sep="-", names_to=c("variable", ".value")))
+```
+
+*Visualmente*:
+
+-   Variables sobre Pymes
+
+```{r}
+#| label: dist-num-vars-pymes-plots
+agg_pymes_df |>
+  ungroup() %>%
+  split(f=.$tamanio) |>
+  lapply(\(x) x |>
+           select(tamanio, starts_with("n_")) |>
+           pivot_longer(-tamanio, names_to="variable", values_to="valor") |>
+           ggplot(aes(x=variable, y=log10(valor))) +
+           geom_violin(fill="#0000FF") +
+           geom_boxplot(width=0.31, alpha=1, fill="#FFA500") +
+           labs(
+             title="Distribuciones de las variables sobre Pymes",
+             subtitle="En escala log10.",
+             x="Variable",
+             y="Cantidad"
+           ) +
+           theme_classic())
+```
+
+-   Variables sobre socio-educativas
+
+```{r}
+#| label: dist-num-vars-socio-educ-plots
+socio_educ_vars <- c("alfabetismo", "accesos_a_estudios_terciarios", "anios_de_educacion_promedio", "promocion_educacion_media_cb", "acceso_a_internet", "porcentaje_de_personal_presupuestado_en_la_intendencia")
+agg_pymes_df |>
+  ungroup() %>%
+  split(f=.$tamanio) |>
+  lapply(\(x) x |>
+           select(tamanio, all_of(socio_educ_vars)) |>
+           pivot_longer(-tamanio, names_to="variable", values_to="valor") |>
+           ggplot(aes(x=variable, y=valor)) +
+           geom_violin(fill="#0000FF") +
+           geom_boxplot(width=0.21, alpha=1, fill="#FFA500") +
+           labs(
+             title="Distribuciones de las variables socio-educativas",
+             subtitle="En escala log10.",
+             x="Variable",
+             y="Cantidad"
+           ) +
+           theme_classic())
+```
+
+-   Variables económicas:
+
+```{r}
+#| label: dist-num-vars-econ-plots
+econ_vars <- c("pobreza", "informalidad", "desempleo_en_jovenes", "gini", "ingresos_de_los_hogares", "tasa_de_desempleo")
+agg_pymes_df |>
+  ungroup() %>%
+  split(f=.$tamanio) |>
+  lapply(\(x) x |>
+           select(tamanio, all_of(econ_vars)) |>
+           pivot_longer(-tamanio, names_to="variable", values_to="valor") |>
+           ggplot(aes(x=variable, y=valor)) +
+           geom_violin(fill="#0000FF") +
+           geom_boxplot(width=0.26, alpha=1, fill="#FFA500") +
+           labs(
+             title="Distribuciones de las variables económicas",
+             subtitle="En escala log10.",
+             x="Variable",
+             y="Cantidad"
+           ) +
+           theme_classic())
+```
+
+Se puede observar que que la mayoría de variables numéricas tienden a tener bastantes datos atípicos atípicos lo que genera que las medidas de apartamiento se vean afectadas y haya una diferencia importante entre las medianas y medias de cada variable.
+A su vez, a excepción de las variables sobre pymes, tienden a tener una forma parecida a una normal con cola alargada (positiva o negativa depende mucho del caso).
+
+-   ¿Cómo se relacionan las distintas variables numéricas con la cantidad de empresas?
+
+    -   Con las variables socio-educativas
+
+```{r}
+#| label: interaccion-n-empresas-vars-educ
+agg_pymes_df |>
+  mutate(n_empresas = log(n_empresas)) |>
+  GGally::ggpairs(columns=c("n_empresas", socio_educ_vars), aes(color=tamanio, alpha=.5), progress = F) |>
+  print() |>
+  suppressWarnings()
+```
+
+-   Con las variables economicas:
+
+```{r}
+#| label: interaccion-n-empresas-econ-vars
+agg_pymes_df |>
+  GGally::ggpairs(columns=c("n_empresas", econ_vars), aes(color=tamanio, alpha=.5), progress = F) |>
+  print() |>
+  suppressWarnings()
+```
+Se puede observar claramente que las variables socio-educativas y económicas son a nivel departamento y que el tamaño de empresa cambia la dispersión de la cantidad de empresas contra las otras variables.
+
+-   ¿Cómo evolucionan los variables de pymes a lo largo de los años?
+
+```{r}
+pymes_df |>
+  mutate(across(starts_with("n_"), ~ as.numeric(na_if(.x, "SIN DATOS")))) |>
+  mutate(across(where(is.numeric), ~ round(.x, 3))) |>
+  select(-sector, -departamento, -tamanio) |>
+  group_by(anio) |>
+  summarise(across(starts_with("n_"), ~ sum(.x, na.rm=T))) |>
+  ungroup() |>
+  mutate(anio = as.numeric(as.character(anio))) |>
+  pivot_longer(-anio, names_to="variable", values_to="valor") |>
+  ggplot(aes(x=anio, y=valor, color=variable)) +
+  geom_line() +
+  labs(
+    title="Evolución de la cantidad de empresas, muertes y nacimientos.",
+    subtitle="A nivel nacional y por año.",
+    x="Año",
+    y="Cantidad"
+  ) +
+  theme_bw()
+```
+
+-   ¿Y por tamaño de la empresa?
+
+```{r}
+pymes_df |>
+  mutate(across(starts_with("n_"), ~ as.numeric(na_if(.x, "SIN DATOS")))) |>
+  mutate(across(where(is.numeric), ~ round(.x, 3))) |>
+  select(-sector, -departamento) |>
+  group_by(anio, tamanio) |>
+  summarise(across(starts_with("n_"), ~ sum(.x, na.rm=T))) |>
+  ungroup() |>
+  mutate(anio = as.numeric(as.character(anio))) |>
+  pivot_longer(c(-anio, -tamanio), names_to="variable", values_to="valor") |>
+  ggplot(aes(x=anio, y=valor, color=variable)) +
+  geom_line() +
+  facet_wrap(~ tamanio, scales="free") +
+  labs(
+    title="Evolución de la cantidad de empresas, muertes y nacimientos.",
+    subtitle="A nivel nacional, por año y sector.",
+    x="Año",
+    y="Cantidad"
+  ) +
+  theme_bw()
+```
+Se tiene que, en general, las muertes y nacimientos se mantienen con poca variación (habría que comprobar que no haya una variable oculta) y que éxisten outliers para las empresas de mayor tamaño mientras que las micro siguen una tendencia creciente pero no así las pequeñas que son más variables en el tiempo.
+
+## Preprocesamiento de datos
+
+Como se pudo observar durante la fase del EDA, nuestro dataset crudo tiene problema de consistencia e incompletitud en los datos que, en ésta sección, abordaremos para transformarlo hacia un dataset que nos permita realizar una predicción lo más confiable posible.
+
+Débido a esto es que realizaremos las siguientes transformaciones antes de modelar:
+
+-   Utilizaremos año, departamento y tamaño como apertura.
+-   Transformaremos todos los datos faltantes a NA.
+-   Redondearemos a 3 decimales las variables numéricas.
+-   Utilizaremos la serie sin datos faltantes (2008-2018)
+
+```{r}
+series_df <- pymes_df |>
+  mutate(across(starts_with("n_"), ~ as.numeric(na_if(.x, "SIN DATOS")))) |>
+  mutate(across(where(is.numeric), ~ round(.x, 3))) |>
+  group_by(anio, departamento, tamanio) |>
+  summarise(across(starts_with("n_"), ~ sum(.x, na.rm = T)), across(!starts_with("n_") & !matches("sector"), ~ mean(., na.rm=T))) |>
+  mutate(across(where(is.numeric), ~ if_else(is.nan(.), NA, .))) |>
+  ungroup() |>
+  filter(as.numeric(anio) < 2019)
+```
+
+## Modelado
+
+Es de nuestro interés la creación de un modelo predictivo de la variable `n_empresas` y, para cumplir con dicho objetivo, utilizaremos el resto de variables como predictores de `n_empresas` tratando de modelar cómo la situación educacional, social y económica de cada departamento influye en la creación de Pymes.
+
+Empezaremos estableciendo un punto de partida con un modelo "baseline" que queremos superar con modelos más complejos que sepan inferir las relaciones complejas en éste problema multidimensional.
+
+### Separación en datos de entrenamiento y de validación
+
+En un problema de predicción, la separación de entrenamiento difiere un poco de lo que se hace para una regresión ya que al querer generar un modelo que predice el futuro nuestra validación reside en que tan bien éste predice en comparación a un evento que realmente ocurrió.
+
+Una práctica común al momento de hacer ésta separación de datos es la de separar basados en tu horizonte de predicción (cuantos puntos a futuro se quiere predecir).
+Utilizando ésta referencia es que utilizaremos el 2017 como punto de separación
+
+```{r}
+#| label: data-splitting
+
+splits <- series_df |>
+  mutate(anio = as.Date(paste0(anio, "-01-01"))) |>
+  time_series_split(initial="9 years", assess = "1 years")
+
+train <- training(splits)
+test <- testing(splits)
+
+splits |>
+  tk_time_series_cv_plan() |>
+  # mutate(set = if_else(as.numeric(anio) <= 2017, "train", "test")) |>
+  filter(departamento == "montevideo") |>
+  ggplot(aes(x=anio, y=n_empresas, color=.key)) +
+  geom_point() +
+  geom_line() +
+  facet_wrap(~ tamanio, scales="free") +
+  labs(
+    title="Series de la cantidad de empresas a lo largo de los años",
+    subtitle="Separadas en sets de entrenamiento y validación",
+    x="Año",
+    y="Cantidad de empresas",
+    fill="Set"
+  ) +
+  theme_bw()
+```
+
+
+### Regresión lineal
+
+Para nuestro modelo base, eligiremos una regresión lineal como nuestro modelo base. Éste es un modelo básico al momento de capturar relaciones complejas o no lineales ya que se basa en la estimación de nuestra variable de interés (y) dada la sumatoria del resto de predictores ($x_i$) por un coeficiente ($b_i$) y un error ($$\varepsilon_i$$), tal que:
+
+$$
+y_i = \beta_0 + \beta_1 x_i + \varepsilon_i
+$$
+
+
+```{r}
+lm_recipe <- recipe(n_empresas ~ ., data=train) |>
+  step_normalize(n_muertes, n_nacimientos) |>
+  step_corr(all_numeric_predictors()) |>
+  step_ordinalscore(tamanio) |>
+  step_dummy(departamento) |>
+  step_mutate(anio = year(anio)) |>
+  step_zv(all_predictors())
+lm_model <- linear_reg(penalty = 0.01, mixture = 0.5) |>
+  set_engine("glmnet")
+wf_linear <- workflow() |>
+  add_model(lm_model) |>
+  add_recipe(lm_recipe) |>
+  fit(train)
+```
+
+### Árboles
+
+Entrenaremos dos tipos distintos de árboles para intentar capturar eficientemente las variables de mayor peso al momento de estimar la cantidad de empresas.
+
+Para ello, primero haremos una búsqueda de hiperparámetros y luego seleccionaremos el mejor modelo en base al `RMSE` como métrica de minimización elegida. Ésta métrica es elegida en base a su poder de interpretabilidad al estar en las mismas unidades que la variable a predecir.
+
+#### Bosque aleatorio
+
+Random Forest es una técnica de ensamble basada en árboles de decisión y en el principio de bagging. Este método entrena múltiples árboles de decisión en subconjuntos aleatorios del conjunto de datos, y combina sus predicciones mediante promedio, lo cual reduce significativamente la varianza del modelo individual.
+
+Random Forest es particularmente adecuado en este contexto porque:
+
+- Es robusto frente al sobreajuste, especialmente cuando hay una alta cardinalidad en variables categóricas como el departamento.
+
+- Captura bien interacciones y no linealidades.
+
+- Su estructura permite interpretar la importancia relativa de las variables predictoras, lo cual nos ayuda a entender la estimación.
+
+```{r}
+rf_recipe <- recipe(n_empresas ~ ., data=train) |>
+  step_ordinalscore(tamanio) |>
+  step_dummy(departamento) |>
+  step_mutate(anio=year(anio))
+
+rf_tbl <- grid_regular(
+  mtry(range=c(2L, 10L)),
+  min_n(),
+  trees()
+) |>
+  create_model_grid(
+    f_model_spec = rand_forest,
+    engine_name  = "ranger",
+    mode         = "regression"
+  )
+
+wfset_rand_forest <- workflow_set(
+  preproc = list(
+    rf_recipe
+  ),
+  models = rf_tbl$.models, 
+  cross = T
+)
+
+rf_model <- rand_forest() |>
+  set_engine("ranger", importance="impurity") |>
+  set_mode("regression")
+
+wf_rand_forest <- workflow() |>
+  add_model(rf_model) |>
+  add_recipe(rf_recipe) |>
+  fit(train)
+```
+
+#### XGBoost
+
+XGBoost (Extreme Gradient Boosting), una técnica de aprendizaje supervisado basada en árboles de decisión y en el principio de boosting. Este algoritmo construye múltiples árboles de forma secuencial, donde cada árbol intenta corregir los errores del anterior. A diferencia de la regresión lineal, XGBoost permite capturar relaciones no lineales y complejas interacciones entre las variables predictoras.
+
+Es un modelo que:
+
+-   Robusto al overfitting
+
+-   Capta relaciones no lineales
+
+```{r}
+xg_recipe <- recipe(n_empresas ~ ., data=train) |>
+  step_ordinalscore(tamanio) |>
+  step_dummy(departamento) |>
+  step_mutate(anio=year(anio))
+
+xg_tbl <- grid_regular(
+  learn_rate(),
+  tree_depth(),
+  trees(range = c(100L, 1000L)),
+  levels=3
+) |>
+  create_model_grid(
+    f_model_spec = boost_tree,
+    engine_name  = "xgboost",
+    mode         = "regression"
+  )
+
+wfset_xgboost <- workflow_set(
+  preproc = list(
+    xg_recipe
+  ),
+  models = xg_tbl$.models, 
+  cross = T
+)
+```
+
+### Entrenamiento
+```{r}
+tree_models_tbl <- wfset_rand_forest |>
+  modeltime_fit_workflowset(
+    data    = train,
+    control = control_fit_workflowset(
+      verbose   = TRUE,
+      allow_par = TRUE
+    )
+  ) |>
+  bind_rows(
+    wfset_xgboost |>
+      modeltime_fit_workflowset(
+        data    = train,
+        control = control_fit_workflowset(
+          verbose   = TRUE,
+          allow_par = TRUE
+        )
+      )
+  )
+
+tree_preds_tbl <- tree_models_tbl |>
+  modeltime_calibrate(new_data = test)
+tree_preds_tbl |> head()
+```
+
+### Evaluación
+A partir de los modelos entrenados calcularemos las métricas de error poniendo foco en el `RMSE`|
+```{r}
+tree_eval_tbl <- tree_preds_tbl |>
+  modeltime_accuracy()
+tree_eval_tbl
+```
+
+### Selección del mejor modelo
+
+De XGBoost vimos que el mejor modelo es:
+```{r}
+xg_tbl |> filter(row_number() == 24) |> select(1:3)
+```
+Y para el random forest:
+```{r}
+rf_tbl |> filter(row_number() == 21) |> select(1:3)
+```
+Entonces reentrenemos un único modelo, calculando predicciones e importancia de cada feature al momento de decidir.
+
+### Predicciones
+
+```{r}
+xg_model <- boost_tree(learn_rate = 0.1, tree_depth = 8, trees = 1000) |>
+  set_engine("xgboost") |>
+  set_mode("regression")
+
+wf_xgboost <- workflow() |>
+  add_recipe(xg_recipe) |>
+  add_model(xg_model) |>
+  fit(train)
+
+rf_model <- rand_forest(mtry = 10, min_n = 2, trees = 100) |>
+  set_engine("ranger", importance="impurity") |>
+  set_mode("regression")
+
+wf_rand_forest <- workflow() |>
+  add_recipe(rf_recipe) |>
+  add_model(rf_model) |>
+  fit(train)
+
+models_tbl <- modeltime_table(
+  wf_linear,
+  wf_rand_forest,
+  wf_xgboost
+)
+
+preds_tbl <- models_tbl |>
+  modeltime_calibrate(new_data = test)
+
+preds_tbl$.calibration_data
+```
+
+### Re-evaluación
+
+Reevaluamos junto a las métricas de la regresión lineal.
+
+```{r}
+eval_tbl <- preds_tbl |>
+    modeltime_accuracy()
+eval_tbl
+```
+
+### Importancia de las variables en los árboles
+
+Es interesante el poder explicar como se llegá a una conclusión (una predicción en este caso), para eso visualizaremos que importancia, a través del "impurity" (en el caso del random forest), se le dio a cada variable.
+
+```{r}
+wf_rand_forest |>
+  extract_fit_parsnip() |>
+  vip::vip(num_features=15)
+```
+
+```{r}
+wf_xgboost |>
+  extract_fit_parsnip() |>
+  vip::vip(num_features=15)
+```
+
+# Referencias
+
+::: {#refs}
+:::
