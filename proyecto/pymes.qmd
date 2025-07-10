@@ -65,7 +65,9 @@ library(tidyverse)
 library(tidymodels)
 library(ggplot2)
 library(modeltime)
+library(timetk)
 options(repr.plot.width=30, repr.plot.height=18)
+set.seed(1922)
 ```
 
 ```{r}
@@ -245,6 +247,16 @@ agg_pymes_df |>
 
 Podemos concluir que al estar tan desagregado nuestro Dataset los datos faltantes pasan a ser un problema a tener en cuenta. A partir de este punto realizaremos nuestro análisis con el dataset aperturado por año, departamento y tamaño.
 
+- ¿Estos NA pertenecen a algún período de tiempo particular?
+```{r}
+agg_pymes_df |>
+  ungroup() |>
+  filter(is.na(part_act_econ)) |>
+  select(anio) |>
+  distinct()
+```
+La serie de la participación en la actividad económica está incompleta para el período 2019-2022.
+
 -   ¿Cómo se comportan las distintas variables numéricas por tamaño de la empresa? ¿Cómo es su distribución? ¿Y el apartamiento?
 
 ```{r}
@@ -280,7 +292,14 @@ agg_pymes_df |>
            pivot_longer(-tamanio, names_to="variable", values_to="valor") |>
            ggplot(aes(x=variable, y=log10(valor))) +
            geom_violin(fill="#0000FF") +
-           geom_boxplot(width=0.31, alpha=1, fill="#FFA500"))
+           geom_boxplot(width=0.31, alpha=1, fill="#FFA500") +
+           labs(
+             title="Distribuciones de las variables sobre Pymes",
+             subtitle="En escala log10.",
+             x="Variable",
+             y="Cantidad"
+           ) +
+           theme_classic())
 ```
 
 -   Variables sobre socio-educativas
@@ -296,7 +315,14 @@ agg_pymes_df |>
            pivot_longer(-tamanio, names_to="variable", values_to="valor") |>
            ggplot(aes(x=variable, y=valor)) +
            geom_violin(fill="#0000FF") +
-           geom_boxplot(width=0.21, alpha=1, fill="#FFA500"))
+           geom_boxplot(width=0.21, alpha=1, fill="#FFA500") +
+           labs(
+             title="Distribuciones de las variables socio-educativas",
+             subtitle="En escala log10.",
+             x="Variable",
+             y="Cantidad"
+           ) +
+           theme_classic())
 ```
 
 -   Variables económicas:
@@ -312,8 +338,18 @@ agg_pymes_df |>
            pivot_longer(-tamanio, names_to="variable", values_to="valor") |>
            ggplot(aes(x=variable, y=valor)) +
            geom_violin(fill="#0000FF") +
-           geom_boxplot(width=0.26, alpha=1, fill="#FFA500"))
+           geom_boxplot(width=0.26, alpha=1, fill="#FFA500") +
+           labs(
+             title="Distribuciones de las variables económicas",
+             subtitle="En escala log10.",
+             x="Variable",
+             y="Cantidad"
+           ) +
+           theme_classic())
 ```
+
+Se puede observar que que la mayoría de variables numéricas tienden a tener bastantes datos atípicos atípicos lo que genera que las medidas de apartamiento se vean afectadas y haya una diferencia importante entre las medianas y medias de cada variable.
+A su vez, a excepción de las variables sobre pymes, tienden a tener una forma parecida a una normal con cola alargada (positiva o negativa depende mucho del caso).
 
 -   ¿Cómo se relacionan las distintas variables numéricas con la cantidad de empresas?
 
@@ -337,6 +373,7 @@ agg_pymes_df |>
   print() |>
   suppressWarnings()
 ```
+Se puede observar claramente que las variables socio-educativas y económicas son a nivel departamento y que el tamaño de empresa cambia la dispersión de la cantidad de empresas contra las otras variables.
 
 -   ¿Cómo evolucionan los variables de pymes a lo largo de los años?
 
@@ -357,7 +394,8 @@ pymes_df |>
     subtitle="A nivel nacional y por año.",
     x="Año",
     y="Cantidad"
-  )
+  ) +
+  theme_bw()
 ```
 
 -   ¿Y por tamaño de la empresa?
@@ -380,8 +418,10 @@ pymes_df |>
     subtitle="A nivel nacional, por año y sector.",
     x="Año",
     y="Cantidad"
-  )
+  ) +
+  theme_bw()
 ```
+Se tiene que, en general, las muertes y nacimientos se mantienen con poca variación (habría que comprobar que no haya una variable oculta) y que éxisten outliers para las empresas de mayor tamaño mientras que las micro siguen una tendencia creciente pero no así las pequeñas que son más variables en el tiempo.
 
 ## Preprocesamiento de datos
 
@@ -420,16 +460,30 @@ Utilizando ésta referencia es que utilizaremos el 2017 como punto de separació
 
 ```{r}
 #| label: data-splitting
-train_df <- series_df |> filter(as.numeric(anio) <= 2017)
-test_df <- series_df |> filter(as.numeric(anio) > 2017)
 
-series_df |>
-  mutate(set = if_else(as.numeric(anio) <= 2017, "train", "test")) |>
+splits <- series_df |>
+  mutate(anio = as.Date(paste0(anio, "-01-01"))) |>
+  time_series_split(initial="9 years", assess = "1 years")
+
+train <- training(splits)
+test <- testing(splits)
+
+splits |>
+  tk_time_series_cv_plan() |>
+  # mutate(set = if_else(as.numeric(anio) <= 2017, "train", "test")) |>
   filter(departamento == "montevideo") |>
-  ggplot(aes(x=as.Date(paste0(anio, "-01-01")), y=n_empresas, color=set)) +
+  ggplot(aes(x=anio, y=n_empresas, color=.key)) +
   geom_point() +
   geom_line() +
-  facet_wrap(~ tamanio, scales="free")
+  facet_wrap(~ tamanio, scales="free") +
+  labs(
+    title="Series de la cantidad de empresas a lo largo de los años",
+    subtitle="Separadas en sets de entrenamiento y validación",
+    x="Año",
+    y="Cantidad de empresas",
+    fill="Set"
+  ) +
+  theme_bw()
 ```
 
 
@@ -443,24 +497,217 @@ $$
 
 
 ```{r}
-lm_recipe <- recipe(n_empresas ~ ., data=train_df) |>
-  step_scale(n_muertes, n_nacimientos) |>
+lm_recipe <- recipe(n_empresas ~ ., data=train) |>
+  step_normalize(n_muertes, n_nacimientos) |>
   step_corr(all_numeric_predictors()) |>
-  step_ordinalscore(tamanio)
-lm_model <- linear_reg() |>
-  set_engine("glm") |>
-  set_mode("regression")
+  step_ordinalscore(tamanio) |>
+  step_dummy(departamento) |>
+  step_mutate(anio = year(anio)) |>
+  step_zv(all_predictors())
+lm_model <- linear_reg(penalty = 0.01, mixture = 0.5) |>
+  set_engine("glmnet")
 wf_linear <- workflow() |>
   add_model(lm_model) |>
-  add_recipe(lm_recipe)
-
-lm_fit <- fit(wf_linear, data=train_df)
-lm_preds <- predict(lm_fit, test_df)
-lm_preds
+  add_recipe(lm_recipe) |>
+  fit(train)
 ```
 
+### Árboles
 
-### Referencias
+Entrenaremos dos tipos distintos de árboles para intentar capturar eficientemente las variables de mayor peso al momento de estimar la cantidad de empresas.
+
+Para ello, primero haremos una búsqueda de hiperparámetros y luego seleccionaremos el mejor modelo en base al `RMSE` como métrica de minimización elegida. Ésta métrica es elegida en base a su poder de interpretabilidad al estar en las mismas unidades que la variable a predecir.
+
+#### Bosque aleatorio
+
+Random Forest es una técnica de ensamble basada en árboles de decisión y en el principio de bagging. Este método entrena múltiples árboles de decisión en subconjuntos aleatorios del conjunto de datos, y combina sus predicciones mediante promedio, lo cual reduce significativamente la varianza del modelo individual.
+
+Random Forest es particularmente adecuado en este contexto porque:
+
+- Es robusto frente al sobreajuste, especialmente cuando hay una alta cardinalidad en variables categóricas como el departamento.
+
+- Captura bien interacciones y no linealidades.
+
+- Su estructura permite interpretar la importancia relativa de las variables predictoras, lo cual nos ayuda a entender la estimación.
+
+```{r}
+rf_recipe <- recipe(n_empresas ~ ., data=train) |>
+  step_ordinalscore(tamanio) |>
+  step_dummy(departamento) |>
+  step_mutate(anio=year(anio))
+
+rf_tbl <- grid_regular(
+  mtry(range=c(2L, 10L)),
+  min_n(),
+  trees()
+) |>
+  create_model_grid(
+    f_model_spec = rand_forest,
+    engine_name  = "ranger",
+    mode         = "regression"
+  )
+
+wfset_rand_forest <- workflow_set(
+  preproc = list(
+    rf_recipe
+  ),
+  models = rf_tbl$.models, 
+  cross = T
+)
+
+rf_model <- rand_forest() |>
+  set_engine("ranger", importance="impurity") |>
+  set_mode("regression")
+
+wf_rand_forest <- workflow() |>
+  add_model(rf_model) |>
+  add_recipe(rf_recipe) |>
+  fit(train)
+```
+
+#### XGBoost
+
+XGBoost (Extreme Gradient Boosting), una técnica de aprendizaje supervisado basada en árboles de decisión y en el principio de boosting. Este algoritmo construye múltiples árboles de forma secuencial, donde cada árbol intenta corregir los errores del anterior. A diferencia de la regresión lineal, XGBoost permite capturar relaciones no lineales y complejas interacciones entre las variables predictoras.
+
+Es un modelo que:
+
+-   Robusto al overfitting
+
+-   Capta relaciones no lineales
+
+```{r}
+xg_recipe <- recipe(n_empresas ~ ., data=train) |>
+  step_ordinalscore(tamanio) |>
+  step_dummy(departamento) |>
+  step_mutate(anio=year(anio))
+
+xg_tbl <- grid_regular(
+  learn_rate(),
+  tree_depth(),
+  trees(range = c(100L, 1000L)),
+  levels=3
+) |>
+  create_model_grid(
+    f_model_spec = boost_tree,
+    engine_name  = "xgboost",
+    mode         = "regression"
+  )
+
+wfset_xgboost <- workflow_set(
+  preproc = list(
+    xg_recipe
+  ),
+  models = xg_tbl$.models, 
+  cross = T
+)
+```
+
+### Entrenamiento
+```{r}
+tree_models_tbl <- wfset_rand_forest |>
+  modeltime_fit_workflowset(
+    data    = train,
+    control = control_fit_workflowset(
+      verbose   = TRUE,
+      allow_par = TRUE
+    )
+  ) |>
+  bind_rows(
+    wfset_xgboost |>
+      modeltime_fit_workflowset(
+        data    = train,
+        control = control_fit_workflowset(
+          verbose   = TRUE,
+          allow_par = TRUE
+        )
+      )
+  )
+
+tree_preds_tbl <- tree_models_tbl |>
+  modeltime_calibrate(new_data = test)
+tree_preds_tbl |> head()
+```
+
+### Evaluación
+A partir de los modelos entrenados calcularemos las métricas de error poniendo foco en el `RMSE`|
+```{r}
+tree_eval_tbl <- tree_preds_tbl |>
+  modeltime_accuracy()
+tree_eval_tbl
+```
+
+### Selección del mejor modelo
+
+De XGBoost vimos que el mejor modelo es:
+```{r}
+xg_tbl |> filter(row_number() == 24) |> select(1:3)
+```
+Y para el random forest:
+```{r}
+rf_tbl |> filter(row_number() == 21) |> select(1:3)
+```
+Entonces reentrenemos un único modelo, calculando predicciones e importancia de cada feature al momento de decidir.
+
+### Predicciones
+
+```{r}
+xg_model <- boost_tree(learn_rate = 0.1, tree_depth = 8, trees = 1000) |>
+  set_engine("xgboost") |>
+  set_mode("regression")
+
+wf_xgboost <- workflow() |>
+  add_recipe(xg_recipe) |>
+  add_model(xg_model) |>
+  fit(train)
+
+rf_model <- rand_forest(mtry = 10, min_n = 2, trees = 100) |>
+  set_engine("ranger", importance="impurity") |>
+  set_mode("regression")
+
+wf_rand_forest <- workflow() |>
+  add_recipe(rf_recipe) |>
+  add_model(rf_model) |>
+  fit(train)
+
+models_tbl <- modeltime_table(
+  wf_linear,
+  wf_rand_forest,
+  wf_xgboost
+)
+
+preds_tbl <- models_tbl |>
+  modeltime_calibrate(new_data = test)
+
+preds_tbl$.calibration_data
+```
+
+### Re-evaluación
+
+Reevaluamos junto a las métricas de la regresión lineal.
+
+```{r}
+eval_tbl <- preds_tbl |>
+    modeltime_accuracy()
+eval_tbl
+```
+
+### Importancia de las variables en los árboles
+
+Es interesante el poder explicar como se llegá a una conclusión (una predicción en este caso), para eso visualizaremos que importancia, a través del "impurity" (en el caso del random forest), se le dio a cada variable.
+
+```{r}
+wf_rand_forest |>
+  extract_fit_parsnip() |>
+  vip::vip(num_features=15)
+```
+
+```{r}
+wf_xgboost |>
+  extract_fit_parsnip() |>
+  vip::vip(num_features=15)
+```
+
+# Referencias
 
 ::: {#refs}
 :::
